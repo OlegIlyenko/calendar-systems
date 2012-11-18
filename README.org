@@ -1,0 +1,30 @@
+
+* Calendar Systems
+
+  Is a project that concentrates on creating a library for creating
+  and using calendar systems. it is mainly targeted on living calendar
+  systems. But it's possible to create your own Calendar-systems that
+  can be transformed in all other calendar system. We use a reference
+  calendar for the transformation, so don't forget to write unit tests
+  to check you transforming rules.
+
+** Goals
+   1. Creation of Calendar systems that are as correct as possible.
+   2. Mapping between calendar systems.
+   3. Holiday definition by rules (functions).
+   4. All kinds of calendar system craziness  should be possible (for
+      example Gregorian calendar, and the Day shift in 1800)
+   5.
+
+** Interpretation
+   A Calendar system consists of Calendar Elements. Which are mostly
+   an set of enums. These enums are ordered. 
+   For example 
+
+   Year(x), Month(y), Day(z)
+
+   When there is no deeper detail of the next level of state, we
+   assume we mean the moment of beginning of that Element. For the
+   upper example we mean the exact moment of entering the date x.y.z.
+   This is because we don't understand Time as streaming, instead as
+   list of ticks.
