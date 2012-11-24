@@ -27,10 +27,14 @@ class ReferenceCalendarSuite extends FlatSpec {
     // write me
   }
 
-  it should "not end up in stackoverflows" ignore  {
+  it should "not end up in stackoverflows" in {
     val date1 = GregorianCalendar.create(2000, 6, 6, 3, 2, 1)
     val date2 = GregorianCalendar.create(2000, 6, 5, 3, 2, 1)
-    assert(date1.toRef == (date2.toRef + Day(1)), "recursive call on toSecondsForAdd")
+    try{
+      assert(date1.toRef == (date2.toRef + Day(1)))
+    } catch {
+      case _: Throwable => assert(condition = false, clue = "recursive call on toSecondsForAdd")
+    }
   }
 
 

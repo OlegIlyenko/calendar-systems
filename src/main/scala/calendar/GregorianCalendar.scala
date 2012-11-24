@@ -61,7 +61,11 @@ object GregorianCalendar extends Calendar[GregorianDate] {
 }
 
 
-case class Year(y: Int) extends DateElement {
+abstract class GregorianDateElement extends DateElement[GregorianDate]{
+  def calendar = GregorianCalendar
+}
+
+case class Year(y: Int) extends GregorianDateElement {
   // 366 Days
   val leapYear: BigInt = 31622400
   // 365 Days
@@ -81,7 +85,7 @@ case class Year(y: Int) extends DateElement {
   def isLeap = GregorianCalendar.isLeapYear(y)
 }
 
-case class Month(m: Int) extends DateElement {
+case class Month(m: Int) extends GregorianDateElement {
   val month31: BigInt = 2678400
   val month30: BigInt = 2592000
   val month29: BigInt = 2505600
@@ -113,25 +117,25 @@ case class Month(m: Int) extends DateElement {
   }
 }
 
-case class Day(d: Int) extends DateElement {
+case class Day(d: Int) extends GregorianDateElement {
   val oneDay: BigInt = 86400
 
   def toSeconds = oneDay * d
 }
 
-case class Hour(h: Int) extends DateElement {
+case class Hour(h: Int) extends GregorianDateElement {
   val oneHour: BigInt = 3600
 
   def toSeconds = oneHour * h
 }
 
-case class Minute(m: Int) extends DateElement {
+case class Minute(m: Int) extends GregorianDateElement {
   val oneMinute: BigInt = 60
 
   def toSeconds = oneMinute * m
 }
 
-case class Second(s: Int) extends DateElement {
+case class Second(s: Int) extends GregorianDateElement {
   def toSeconds: BigInt = s
 }
 
@@ -163,7 +167,7 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
    * @param toAdd time to add
    * @return a date + the time to add
    */
-  override def +(toAdd: DateElement) = toAdd match {
+  override def +[S <: Date[S]](toAdd: DateElement[S]) = toAdd match {
     case Year(y) => addYear(y)
     case Month(m) => addMonth(m)
     case Day(d) => addDay(d)
@@ -179,7 +183,7 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
    * @param toSub time to subtract
    * @return     a date - time to subtract
    */
-  override def -(toSub: DateElement) = toSub match {
+  override def -[S <: Date[S]](toSub: DateElement[S]) = toSub match {
     case Year(y) => subYear(y)
     case Month(m) => subMonth(m)
     case Day(d) => subDay(d)

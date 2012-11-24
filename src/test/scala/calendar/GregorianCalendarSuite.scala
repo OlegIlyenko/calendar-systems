@@ -40,7 +40,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
   }
 
   def checkDateElementSubtraction(toSubtractFromDate : GregorianDate,
-                                  elementToSubtract : DateElement,
+                                  elementToSubtract : GregorianDateElement,
                                   resultingSeconds : BigInt) {
     val subtraction : BigInt = elementToSubtract.toSecondsForSubtraction(toSubtractFromDate)
     assert(subtraction == resultingSeconds,
@@ -49,7 +49,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
   }
 
   def checkDateElementAddition(toAddToDate : GregorianDate,
-                               elementToAdd : DateElement,
+                               elementToAdd : GregorianDateElement,
                                resultingSeconds : BigInt) {
     val addition : BigInt = elementToAdd.toSecondsForAddition(toAddToDate)
     assert(addition == resultingSeconds,
@@ -120,11 +120,27 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
 
 
   def checkDate(date : GregorianDate) {
-    val  refDate = GregorianCalendar.fromRef(date.toRef)
-    assert(date == refDate, date + " != " + refDate + " => " + date.toSeconds + " != " + refDate.toSeconds)
+    lazy val ref = date.toRef
+    try{
+      ref
+    }catch {
+      case _: Throwable => assert(condition = false, clue = "could not transform to refDate " + date)
+    }
+    lazy val fromRef = GregorianCalendar.fromRef(ref)
+    try{
+      fromRef
+    } catch {
+      case _: Throwable => assert(condition = false, clue = "could not transform to Gregorian Calendar " + ref)
+    }
+
+    try {
+      assert(date == fromRef, "" + date + " != " + fromRef + " => " + date.toSeconds + " != " + fromRef.toSeconds)
+    } catch {
+      case _: Throwable => assert(condition = false, clue = "could not equal dates")
+    }
   }
 
-  "For Dates " should "equal be correct" in {
+  "For Dates " should "equal be correct" in  {
     val date1 = GregorianCalendar.create(2000, 6, 5, 3, 2, 1)
     val date2 = GregorianCalendar.create(2000, 6, 5, 3, 2, 1)
     assert(date1 == date2)
@@ -143,7 +159,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     checkDate(GregorianCalendar.create(2000, 1, 1, 0, 0, 0))
   }
 
-  it should "retransform correct with month precission" in {
+  it should "retransform correct with month precission" in  {
     checkDate(GregorianCalendar.create(2001, 1, 1, 0, 0, 0))
     checkDate(GregorianCalendar.create(2001, 2, 1, 0, 0, 0))
     checkDate(GregorianCalendar.create(2001, 3, 1, 0, 0, 0))
@@ -158,7 +174,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     checkDate(GregorianCalendar.create(2001, 12, 1, 0, 0, 0))
   }
 
-  it should "retransform correct with day precission" in {
+  it should "retransform correct with day precission" in  {
     checkDate(GregorianCalendar.create(2000, 3, 3, 0, 0, 0))
     checkDate(GregorianCalendar.create(2000, 3, 1, 0, 0, 0))
     checkDate(GregorianCalendar.create(2000, 2, 28, 0, 0, 0))
@@ -167,15 +183,15 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     checkDate(GregorianCalendar.create(2000, 5, 18, 0, 0, 0))
   }
 
-  it should "retransform correct with hour precission" in {
+  it should "retransform correct with hour precission" in  {
     checkDate(GregorianCalendar.create(2000, 4, 3, 1, 0, 0))
   }
 
-  it should "retransform correct with minute precission" in {
+  it should "retransform correct with minute precission" in  {
     checkDate(GregorianCalendar.create(2000, 5, 4, 2, 1, 0))
   }
 
-  it should "retransform correct with second precission" in  {
+  it should "retransform correct with second precission" in   {
     checkDate(GregorianCalendar.create(2000, 6, 5, 3, 2, 1))
   }
 

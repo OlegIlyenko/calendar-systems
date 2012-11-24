@@ -23,10 +23,9 @@ object RefCalendar extends Calendar[RefDate] {
 final class RefDate(val seconds: BigInt) extends Date[RefDate] {
   def calendar = RefCalendar
 
+  def +[S <: Date[S]](toAdd: DateElement[S]) = defaultAdd(toAdd)
 
-  def +(toAdd: DateElement) = defaultAdd(toAdd)
-
-  def -(toSub: DateElement) = defaultSub(toSub)
+  def -[S <: Date[S]](toSub: DateElement[S]) = defaultSub(toSub)
 
   /**
    * is this Date a valid Date

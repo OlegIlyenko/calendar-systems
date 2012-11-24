@@ -1,12 +1,12 @@
 package calendar.base
 
 import calendar.RefDate
-import java.lang.IllegalArgumentException
 
 /**
  * The Calendar interface
  */
-trait Calendar[D <: Date[D]] {
+trait Calendar[+D <: Date[D]] {
+
   /**
    * transform a RefCal Date to D
    * @param r a RefCal Date
@@ -14,12 +14,25 @@ trait Calendar[D <: Date[D]] {
    */
   def fromRef(r: RefDate): D
 
+  /**
+   * transform the date to my date. it's a bit buggy but this will change in the future.
+   * It hopes that it will always be called by defaultAdd and defaultSub.
+   * @param date
+   * @tparam S
+   * @return
+   */
+  def transformToMe[S <: Date[S]](date : S) : D = date match {
+    case s : RefDate => fromRef(s.toRef)
+    case d : D => d
+    case s => fromRef(s.toRef)
+  }
+
 }
 
 /**
  * date interface for the corresponding calendar
  */
-abstract class Date[D <: Date[D]] {
+abstract class Date[+D <: Date[D]] {
   self: D =>
 
   def calendar: Calendar[D]
@@ -43,8 +56,11 @@ abstract class Date[D <: Date[D]] {
    * @return a date + the time to add
    */
   // fixme causes stackoverflows (because of fastCalendarCreator)
-  def defaultAdd(toAdd: DateElement): D = calendar.fromRef(new RefDate(toRef.seconds + toAdd.toSecondsForAddition(this)))
-  def +(toAdd : DateElement) : D
+  def defaultAdd[S <: Date[S]](toAdd: DateElement[S]): D = {
+    val refDate = toRef
+    calendar.fromRef(new RefDate(refDate.seconds + toAdd.toSecondsForAddition(refDate)))
+  }
+  def +[S <: Date[S]](toAdd : DateElement[S]) : D
 
   /**
    * date - time to subtract
@@ -52,8 +68,11 @@ abstract class Date[D <: Date[D]] {
    * @return     a date - time to subtract
    */
   // fixme causes stackoverflows
-  def defaultSub(toSub: DateElement): D = calendar.fromRef(new RefDate(toRef.seconds - toSub.toSecondsForSubtraction(this)))
-  def -(toSub : DateElement) : D
+  def defaultSub[S <: Date[S]](toSub: DateElement[S]): D = {
+    val refDate = toRef
+    calendar.fromRef(new RefDate(refDate.seconds - toSub.toSecondsForSubtraction(refDate)))
+  }
+  def - [S <: Date[S]](toSub : DateElement[S]) : D
 
   /**
    * correct invalid date to the next valid date
@@ -68,55 +87,6 @@ abstract class Date[D <: Date[D]] {
   def unary_!- : D
 
   def toSeconds: BigInt = toRef.seconds
-
-  /**
-   * creat a Sequence of Dates
-   * @param stop stop date
-   * @param stepSize stepSize
-   * @return
-   */
-  def to(implicit stepSize: DateElement, stop: D): Iterable[D] =
-    if (!stop.isValid)
-      throw new IllegalArgumentException(stop + " is not valid")
-    else
-      to(stepSize, (date => stop > date))
-
-
-  /**
-   * creates an iterable until the predicate becomes false.
-   * @param stepSize for the iterable
-   * @param p predicate for creating a next element
-   * @return
-   */
-  def to(implicit stepSize: DateElement, p: D => Boolean): Iterable[D] = {
-
-    val me: D = this
-    new Iterable[D] {
-      def iterator = new Iterator[D] {
-        var actual: D = me
-
-        // todo optimize me
-        def hasNext = !p(actual + stepSize)
-
-        // todo optimize me
-        def next() = {
-          if (hasNext) {
-            actual = actual + stepSize
-            actual
-          } else {
-            throw new IndexOutOfBoundsException
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * creates an infinite iterable
-   * @param stepSize
-   * @return
-   */
-  def iterable(implicit stepSize: DateElement): Iterable[D] = to(stepSize, _ => true)
 
   def ==[S <: Date[S]](that: S): Boolean = toRef == that.toRef
 
@@ -134,7 +104,13 @@ abstract class Date[D <: Date[D]] {
 /**
  * date elements like Day, Month, Year
  */
-trait DateElement {
+trait DateElement[D <: Date[D]] {
+
+  def calendar : Calendar[D]
+
+  def transformedToMe[S <: Date[S]](date : S) : D =
+    calendar.transformToMe(date)
+
   /**
    * correction function for subtraction
    * this function is meant to be overridden.
@@ -142,7 +118,10 @@ trait DateElement {
    * @param date
    * @return
    */
-  def toSecondsForSubtraction[D <: Date[D]](date: D): BigInt = date.toSeconds - (date - this).toSeconds
+  def toSecondsForSubtraction[S <: Date[S]](date: S): BigInt = {
+    val myDate = transformedToMe(date)
+    myDate.toSeconds - (myDate - this).toSeconds
+  }
 
   /**
    * correction function for subtraction
@@ -150,5 +129,9 @@ trait DateElement {
    * @param date
    * @return
    */
-  def toSecondsForAddition[D <: Date[D]](date: D): BigInt = (date + this).toSeconds - date.toSeconds
+  def toSecondsForAddition[S <: Date[S]](date: S): BigInt = {
+    val myDate = transformedToMe(date)
+    //println(date)
+    (myDate + this).toSeconds - myDate.toSeconds
+  }
 }

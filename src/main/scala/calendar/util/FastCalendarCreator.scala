@@ -16,14 +16,14 @@ import annotation.tailrec
  */
 class FastCalendarCreator[D <: Date[D]](zeroDate: D) {
 
-  var iters: List[DateElement] = List()
+  var iters: List[DateElement[D]] = List()
   val zero = BigInt(0)
 
   /**
    * Iterater to step to the correct date
    * @param iterDate step size to create the date
    */
-  def ->(iterDate: DateElement): FastCalendarCreator[D] = {
+  def ->(iterDate: DateElement[D]): FastCalendarCreator[D] = {
     iters = iterDate :: iters
     this
   }
@@ -43,7 +43,7 @@ class FastCalendarCreator[D <: Date[D]](zeroDate: D) {
        * @return a date
        */
       @tailrec
-      def step(incrementSeconds: Boolean, accuSeconds: BigInt, accuIterDate: List[DateElement], accuDate: D): D = {
+      def step(incrementSeconds: Boolean, accuSeconds: BigInt, accuIterDate: List[DateElement[D]], accuDate: D): D = {
         // todo create a guard for endless loops
         if (accuSeconds == 0) accuDate
         else {
