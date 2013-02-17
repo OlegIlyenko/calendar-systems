@@ -30,7 +30,7 @@ trait Calendar[+D <: Date[D]] {
 }
 
 /**
- * date interface for the corresponding calendar
+ * date interface for the corresponding de.sockenbaum.calendar
  */
 abstract class Date[+D <: Date[D]] {
   self: D =>

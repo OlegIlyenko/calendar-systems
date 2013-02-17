@@ -3,7 +3,7 @@ package calendar
 import calendar.base._
 
 /**
- * the reference calendar object.
+ * the reference de.sockenbaum.calendar object.
  * seconds since midnight, January 1, 1970 UTC
  * <ul>
  * <li> 1 Minute = 60 Seconds                            </li>
@@ -18,7 +18,7 @@ object RefCalendar extends Calendar[RefDate] {
 }
 
 /**
- * the reference calendar Elements
+ * the reference de.sockenbaum.calendar Elements
  */
 final class RefDate(val seconds: BigInt) extends Date[RefDate] {
   def calendar = RefCalendar

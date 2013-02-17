@@ -9,7 +9,7 @@ import annotation.tailrec
  * You just have to define you Date format, the + and - function, and need a reference date
  *
  * <p>
- * the name is a bit misleading. The calendar is fast created, but is very slow in calculation
+ * the name is a bit misleading. The de.sockenbaum.calendar is fast created, but is very slow in calculation
  * </p>
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  * @param zeroDate the reference date for RefDate(0)

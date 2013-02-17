@@ -7,16 +7,16 @@
 ** Introduction
 
    Is a project that concentrates on creating a library for creating
-   and using calendar systems. it is mainly targeted on living calendar
+   and using de.sockenbaum.calendar systems. it is mainly targeted on living de.sockenbaum.calendar
    systems. But it's possible to create your own Calendar-systems that
-   can be transformed in all other calendar system. We use a reference
-   calendar for the transformation, so don't forget to write unit tests
+   can be transformed in all other de.sockenbaum.calendar system. We use a reference
+   de.sockenbaum.calendar for the transformation, so don't forget to write unit tests
    to check you transforming rules.
 
 ** Goals
    1. Creation of Calendar systems that are as correct as possible.
-   2. Mapping between calendar systems.
+   2. Mapping between de.sockenbaum.calendar systems.
    3. Holiday definition by rules (functions).
-   4. All kinds of calendar system craziness  should be possible (for
-      example Gregorian calendar, and the Day shift in 1800)
+   4. All kinds of de.sockenbaum.calendar system craziness  should be possible (for
+      example Gregorian de.sockenbaum.calendar, and the Day shift in 1800)
       
