@@ -1,7 +1,6 @@
 package calendar.util
 
 import calendar.base.{RefDate, Date, DateElement}
-import calendar.RefDate
 import annotation.tailrec
 
 /**
@@ -91,15 +90,15 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
         }
       }
 
-      val seconds = r.seconds
+      val seconds = r.millis.millis
       // just for debugging
       // println("start " + r.seconds)
       if (seconds == 0)
         zeroDate
       else if (seconds < 0)
-        step(true, r.seconds, iters, zeroDate)
+        step(true, r.millis.millis, iters, zeroDate)
       else
-        step(false, r.seconds, iters, zeroDate)
+        step(false, r.millis.millis, iters, zeroDate)
     }
   }
 }
