@@ -218,7 +218,7 @@ object GregDate {
   val refHelper = ((new FastCalendarCreator(zeroDate)) -> Second(1) -> Minute(1) -> Hour(1) -> Day(1) -> Month(1) -> Year(1)).finished
 
   // todo make me val
-  implicit def fromRef = new DateConverter[RefDate, GregDate] {
+  implicit val fromRef = new DateConverter[RefDate, GregDate] {
     def convert(a: RefDate) = refHelper(a)
   }
 }
