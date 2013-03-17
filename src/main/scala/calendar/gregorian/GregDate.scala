@@ -12,6 +12,8 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   extends Date {
   type D = GregDate
 
+  lazy val isLeap = GregDate.isLeapYear(year.y)
+
   def add(elem: DateElement[D]) = elem match {
     case Year(y) => addYear(y)
     case Month(m) => addMonth(m)
@@ -22,7 +24,7 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   }
 
   def sub(elem: DateElement[D]) = elem match {
-    case Year(y) => addYear(-y)
+    case Year(y) => subYear(y)
     case Month(m) => subMonth(m)
     case Day(d) => subDay(d)
     case Hour(h) => subHour(h)
@@ -33,6 +35,11 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   def addYear(y: Int): GregDate = {
     GregDate.create(year.y + y, month.m, day.d, hour.h, min.m, sec.s)
   }
+
+  def subYear(y: Int): GregDate = {
+    GregDate.create(year.y -  y, month.m, day.d, hour.h, min.m, sec.s)
+  }
+
 
   def addMonth(toAdd: Int): GregDate = if (toAdd == 0) this
   else if (toAdd < 0) subMonth(-toAdd)
