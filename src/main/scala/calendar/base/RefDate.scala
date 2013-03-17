@@ -7,7 +7,7 @@ package calendar.base
  *
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
-class RefDate extends Date {
+case class RefDate(millis : Millisecond) extends Date {
   type C = RefDate
 
 }
