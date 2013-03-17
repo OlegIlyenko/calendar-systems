@@ -1,6 +1,6 @@
 package calendar.util
 
-import calendar.base.{DateElement}
+import calendar.base.{RefDate, Date, DateElement}
 import calendar.RefDate
 import annotation.tailrec
 
@@ -14,7 +14,7 @@ import annotation.tailrec
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  * @param zeroDate the reference date for RefDate(0)
  */
-class FastCalendarCreator[D <: Date[D]](zeroDate: D) {
+class FastCalendarCreator[D <: Date](zeroDate: D) {
 
   var iters: List[DateElement[D]] = List()
   val zero = BigInt(0)

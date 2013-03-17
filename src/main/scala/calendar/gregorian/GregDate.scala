@@ -2,6 +2,7 @@ package calendar.gregorian
 
 import calendar.base._
 import calendar.base.Millisecond
+import calendar.util.FastCalendarCreator
 
 /**
  * @author Ingolf Wagner <palipalo9@googlemail.com>
@@ -74,5 +75,12 @@ object GregDate {
         oneSecond * a.sec.s +
         a.mil.millis
     ))
+  }
+
+  val zeroDate = GregDate(Year(1970), Month(1), Day(1), Hour(0), Minute(0), Second(0), Millisecond(0))
+  val refHelper = ((new FastCalendarCreator(zeroDate)) -> Second(1) -> Minute(1) -> Hour(1) -> Day(1) -> Month(1) -> Year(1)).finished
+
+  def fromRef = new DateConverter[RefDate, GregDate] {
+    def convert(a: RefDate) = refHelper(a)
   }
 }
