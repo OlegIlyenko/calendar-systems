@@ -24,4 +24,8 @@ case class RefDate(millis : Millisecond) extends Date {
 
 }
 
+object RefDate{
+  def as[T <: Date](date : T)(implicit ev : DateConverter[T, RefDate]) = ev.convert(date)
+}
+
 case class Millisecond(millis : BigInt) extends DateElement[RefDate]
