@@ -1,75 +1,57 @@
 package calendar.base
 
-import calendar.RefDate
+/**
+ * The Date interface
+ *
+ * Here all the sugar is defined
+ */
+trait Date {
+  type D <: Date
+
+  def ??? = throw new IllegalStateException()
+
+  def toCalendar[A](implicit evidence: DateConverter[D, A]) =
+    evidence.convert(this.asInstanceOf[D])
+
+  def +[T <: Date](elem : DateElement[T])
+                  (implicit back : DateConverter[T,D], to: DateConverter[D,T]) : D = {
+    back.convert(to.convert(this).add(elem))
+  }
+
+  def -[T <: Date](elem : DateElement[T])
+                  (implicit back : DateConverter[T,D], to: DateConverter[D,T]) : D = {
+    back.convert(to.convert(this).delete(elem))
+  }
+
+
+  def < = ???
+  def <= = ???
+  def > = ???
+  def >= = ???
+  def == = ???
+
+  // the following has to be defined be the user
+  def add(elem : DateElement[D]) : D
+  def delete(elem : DateElement[D]) : D
+}
+
 
 /**
- * date interface for the corresponding calendar
+ * default converters are defined here.
+ *
+ * the converter magic is also happening here.
  */
-abstract class Date[+D <: Date[D]] {
-  self: D =>
-
-  def calendar: Calendar[D]
-
-  /**
-   * is this Date a valid Date
-   * like 12.02.31 with yy.mm.dd is not
-   * @return true when this Date belongs to the Calendar
-   */
-  def isValid: Boolean
-
-  /**
-   * get the corresponding date in RefCal
-   * @return
-   */
-  def toRef: RefDate
-
-  /**
-   * date + time to Add
-   * @param toAdd time to add
-   * @return a date + the time to add
-   */
-  // fixme causes stackoverflows (because of fastCalendarCreator)
-  def defaultAdd[S <: Date[S]](toAdd: DateElement[S]): D = {
-    val refDate = toRef
-    calendar.fromRef(new RefDate(refDate.seconds + toAdd.toSecondsForAddition(refDate)))
+object Date {
+  implicit def identityConverter[T <: Date] = new DateConverter[T, T] {
+    def convert(a: T) = a
   }
-  def +[S <: Date[S]](toAdd : DateElement[S]) : D
 
-  /**
-   * date - time to subtract
-   * @param toSub time to subtract
-   * @return     a date - time to subtract
-   */
-  // fixme causes stackoverflows
-  def defaultSub[S <: Date[S]](toSub: DateElement[S]): D = {
-    val refDate = toRef
-    calendar.fromRef(new RefDate(refDate.seconds - toSub.toSecondsForSubtraction(refDate)))
+  implicit def standardConverter[A <: Date, B <: Date]
+  (implicit ev1: DateConverter[A, RefDate], ev2: DateConverter[RefDate, B]) = new DateConverter[A, B] {
+    def convert(a: A) = ev2.convert(ev1.convert(a))
   }
-  def - [S <: Date[S]](toSub : DateElement[S]) : D
 
-  /**
-   * correct invalid date to the next valid date
-   * @return
-   */
-  def unary_!+ : D
-
-  /**
-   * correct invalid date to the next valid date
-   * @return
-   */
-  def unary_!- : D
-
-  def toSeconds: BigInt = toRef.seconds
-
-  def ==[S <: Date[S]](that: S): Boolean = toRef == that.toRef
-
-  def >[S <: Date[S]](that: S): Boolean = toRef > that.toRef
-
-  def >=[S <: Date[S]](that: S): Boolean = toRef >= that.toRef
-
-  def <[S <: Date[S]](that: S): Boolean = toRef < that.toRef
-
-  def <=[S <: Date[S]](that: S): Boolean = toRef <= that.toRef
-
-  def !=[S <: Date[S]](that: S): Boolean = toRef != that.toRef
 }
+
+
+

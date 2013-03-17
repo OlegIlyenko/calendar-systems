@@ -1,11 +1,11 @@
 package calendar.util
 
-import calendar.base.{DateElement, Date}
+import calendar.base.{DateElement}
 import calendar.RefDate
 import annotation.tailrec
 
 /**
- * This is a util to make a Calendar in very short time.
+ * This is a util to make a Date in very short time.
  * You just have to define you Date format, the + and - function, and need a reference date
  *
  * <p>

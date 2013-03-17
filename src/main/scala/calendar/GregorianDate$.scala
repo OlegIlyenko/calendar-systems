@@ -7,14 +7,14 @@ import annotation.tailrec
 import sun.util.calendar.Gregorian
 
 /**
- * We interpret the Gregorian Calendar as a Calendar system that has no starting point.
+ * We interpret the Gregorian Date as a Date system that has no starting point.
  * <p>
- * The Gregorian Calendar has no switch on the 4.Oct.1582 to 15.Oct.1582
+ * The Gregorian Date has no switch on the 4.Oct.1582 to 15.Oct.1582
  * </p>
  *
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  */
-object GregorianCalendar extends Calendar[GregorianDate] {
+object GregorianDate$ extends Date[GregorianDate] {
 
   def create(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int) =
     new GregorianDate(Year(year), Month(month), Day(day), Hour(hour), Minute(minute), Second(second))
@@ -62,7 +62,7 @@ object GregorianCalendar extends Calendar[GregorianDate] {
 
 
 abstract class GregorianDateElement extends DateElement[GregorianDate]{
-  def calendar = GregorianCalendar
+  def calendar = GregorianDate$
 }
 
 case class Year(y: Int) extends GregorianDateElement {
@@ -77,12 +77,12 @@ case class Year(y: Int) extends GregorianDateElement {
    */
   def toRefSeconds = {
     val years = y - 1970
-    val leapYears = if (years > 0) GregorianCalendar.numberOfLeapYears(1970, y - 1)
-    else GregorianCalendar.numberOfLeapYears(y, 1970 - 1)
+    val leapYears = if (years > 0) GregorianDate$.numberOfLeapYears(1970, y - 1)
+    else GregorianDate$.numberOfLeapYears(y, 1970 - 1)
     leapLessYear * (years - leapYears) + leapYear * leapYears
   }
 
-  def isLeap = GregorianCalendar.isLeapYear(y)
+  def isLeap = GregorianDate$.isLeapYear(y)
 }
 
 case class Month(m: Int) extends GregorianDateElement {
@@ -140,12 +140,12 @@ case class Second(s: Int) extends GregorianDateElement {
 }
 
 class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Hour, val minute: Minute, val second: Second) extends Date[GregorianDate] {
-  def calendar = GregorianCalendar
+  def calendar = GregorianDate$
 
   /**
    * is this Date a valid Date
    * like 12.02.31 with yy.mm.dd is not
-   * @return true when this Date belongs to the Calendar
+   * @return true when this Date belongs to the Date
    */
   def isValid = ???
 
@@ -194,11 +194,11 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   }
 
   def addYear(y: Int): GregorianDate = {
-    GregorianCalendar.create(year.y + y, month.m, day.d, hour.h, minute.m, second.s)
+    GregorianDate$.create(year.y + y, month.m, day.d, hour.h, minute.m, second.s)
   }
 
   def subYear(y: Int): GregorianDate = {
-    GregorianCalendar.create(year.y - y, month.m, day.d, hour.h, minute.m, second.s)
+    GregorianDate$.create(year.y - y, month.m, day.d, hour.h, minute.m, second.s)
   }
 
   def addMonth(toAdd: Int): GregorianDate = if (toAdd == 0) this
@@ -206,9 +206,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultMonth = month.m + toAdd
     if (resultMonth > 12)
-      GregorianCalendar.create(year.y, 1, day.d, hour.h, minute.m, second.s).addYear(1).addMonth(resultMonth - 13)
+      GregorianDate$.create(year.y, 1, day.d, hour.h, minute.m, second.s).addYear(1).addMonth(resultMonth - 13)
     else
-      GregorianCalendar.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
+      GregorianDate$.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
   }
 
 
@@ -218,9 +218,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultMonth = month.m - toSub
     if (resultMonth < 1)
-      GregorianCalendar.create(year.y, 12, day.d, hour.h, minute.m, second.s).subYear(1).subMonth(-resultMonth)
+      GregorianDate$.create(year.y, 12, day.d, hour.h, minute.m, second.s).subYear(1).subMonth(-resultMonth)
     else
-      GregorianCalendar.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
+      GregorianDate$.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
   }
 
 
@@ -231,9 +231,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
     val m = month.daysOfMonth(isLeap)
     val resultDay = day.d + toAdd
     if (resultDay > m)
-      GregorianCalendar.create(year.y, month.m, 1, hour.h, minute.m, second.s).addMonth(1).addDay(resultDay - m - 1)
+      GregorianDate$.create(year.y, month.m, 1, hour.h, minute.m, second.s).addMonth(1).addDay(resultDay - m - 1)
     else
-      GregorianCalendar.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
+      GregorianDate$.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
   }
 
 
@@ -243,9 +243,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultDay = day.d - toSub
     if (resultDay < 1)
-      GregorianCalendar.create(year.y, month.m, Month(month.m - 1).daysOfMonth(isLeap), hour.h, minute.m, second.s).subMonth(1).subDay(-resultDay - 1)
+      GregorianDate$.create(year.y, month.m, Month(month.m - 1).daysOfMonth(isLeap), hour.h, minute.m, second.s).subMonth(1).subDay(-resultDay - 1)
     else
-      GregorianCalendar.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
+      GregorianDate$.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
   }
 
   @tailrec
@@ -254,9 +254,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultHour = hour.h + toAdd
     if (resultHour > 23)
-      GregorianCalendar.create(year.y, month.m, day.d, 0, minute.m, second.s).addDay(1).addHour(resultHour - 24)
+      GregorianDate$.create(year.y, month.m, day.d, 0, minute.m, second.s).addDay(1).addHour(resultHour - 24)
     else
-      GregorianCalendar.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
+      GregorianDate$.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
   }
 
   @tailrec
@@ -265,9 +265,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultHour = hour.h - toSub
     if (resultHour < 0)
-      GregorianCalendar.create(year.y, month.m, day.d, 23, minute.m, second.s).subDay(1).subHour(-resultHour)
+      GregorianDate$.create(year.y, month.m, day.d, 23, minute.m, second.s).subDay(1).subHour(-resultHour)
     else
-      GregorianCalendar.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
+      GregorianDate$.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
   }
 
   @tailrec
@@ -276,9 +276,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultMinute = minute.m + toAdd
     if (resultMinute > 59)
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, 0, second.s).addHour(1).addMinute(resultMinute - 60)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, 0, second.s).addHour(1).addMinute(resultMinute - 60)
     else
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
   }
 
   @tailrec
@@ -287,9 +287,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultMinute = minute.m - toSub
     if (resultMinute < 0)
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, 59, second.s).subHour(1).subMinute(-resultMinute)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, 59, second.s).subHour(1).subMinute(-resultMinute)
     else
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
   }
 
   @tailrec
@@ -298,9 +298,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultSecond = second.s + toAdd
     if (resultSecond > 59)
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, minute.m, 0).addMinute(1).addSecond(resultSecond - 60)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, minute.m, 0).addMinute(1).addSecond(resultSecond - 60)
     else
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
 
   }
 
@@ -310,9 +310,9 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
   else {
     val resultSecond = second.s - toSub
     if (resultSecond < 0)
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, minute.m, 59).subMinute(1).subSecond(-resultSecond)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, minute.m, 59).subMinute(1).subSecond(-resultSecond)
     else
-      GregorianCalendar.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
+      GregorianDate$.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
 
   }
 
@@ -332,5 +332,5 @@ class GregorianDate(val year: Year, val month: Month, val day: Day, val hour: Ho
 
   override def toString = year.y + "." + month.m + "." + day.d + " " + hour.h + ":" + minute.m + ":" + second.s
 
-  def isLeap: Boolean = GregorianCalendar.isLeapYear(year.y)
+  def isLeap: Boolean = GregorianDate$.isLeapYear(year.y)
 }
