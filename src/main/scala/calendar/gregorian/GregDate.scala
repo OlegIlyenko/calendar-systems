@@ -3,6 +3,7 @@ package calendar.gregorian
 import calendar.base._
 import calendar.base.Millisecond
 import calendar.util.FastCalendarCreator
+import annotation.tailrec
 
 /**
  * @author Ingolf Wagner <palipalo9@googlemail.com>
@@ -11,9 +12,150 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   extends Date {
   type D = GregDate
 
-  def add(elem: DateElement[GregDate#D]) = null
+  def add(elem: DateElement[GregDate#D]) = elem match {
+    case Year(y) => addYear(y)
+    case Month(m) => addMonth(m)
+    case Day(d) => addDay(d)
+    case Hour(h) => addHour(h)
+    case Minute(m) => addMinute(m)
+    case Second(s) => addSecond(s)
+  }
 
-  def delete(elem: DateElement[GregDate#D]) = null
+  def delete(elem: DateElement[GregDate#D]) = elem match {
+    case Year(y) => subYear(y)
+    case Month(m) => subMonth(m)
+    case Day(d) => subDay(d)
+    case Hour(h) => subHour(h)
+    case Minute(m) => subMinute(m)
+    case Second(s) => subSecond(s)
+  }
+
+  def addYear(y: Int): GregDate = {
+    GregDate.create(year.y + y, month.m, day.d, hour.h, minute.m, second.s)
+  }
+
+  def subYear(y: Int): GregDate = {
+    GregDate.create(year.y - y, month.m, day.d, hour.h, minute.m, second.s)
+  }
+
+
+
+  def addMonth(toAdd: Int): GregDate = if (toAdd == 0) this
+  else if (toAdd < 0) subMonth(-toAdd)
+  else {
+    val resultMonth = month.m + toAdd
+    if (resultMonth > 12)
+      GregDate.create(year.y, 1, day.d, hour.h, minute.m, second.s).addYear(1).addMonth(resultMonth - 13)
+    else
+      GregDate.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
+  }
+
+
+  @tailrec
+  final def subMonth(toSub: Int): GregDate = if (toSub == 0) this
+  else if (toSub < 0) addMonth(-toSub)
+  else {
+    val resultMonth = month.m - toSub
+    if (resultMonth < 1)
+      GregDate.create(year.y, 12, day.d, hour.h, minute.m, second.s).subYear(1).subMonth(-resultMonth)
+    else
+      GregDate.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
+  }
+
+
+  @tailrec
+  final def addDay(toAdd: Int): GregDate = if (toAdd == 0) this
+  else if (toAdd < 0) subDay(-toAdd)
+  else {
+    val m = month.daysOfMonth(isLeap)
+    val resultDay = day.d + toAdd
+    if (resultDay > m)
+      GregDate.create(year.y, month.m, 1, hour.h, minute.m, second.s).addMonth(1).addDay(resultDay - m - 1)
+    else
+      GregDate.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
+  }
+
+
+  @tailrec
+  final def subDay(toSub: Int): GregDate = if (toSub == 0) this
+  else if (toSub < 0) addDay(-toSub)
+  else {
+    val resultDay = day.d - toSub
+    if (resultDay < 1)
+      GregDate.create(year.y, month.m, Month(month.m - 1).daysOfMonth(isLeap), hour.h, minute.m, second.s).subMonth(1).subDay(-resultDay - 1)
+    else
+      GregDate.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
+  }
+
+  @tailrec
+  final def addHour(toAdd: Int): GregDate = if (toAdd == 0) this
+  else if (toAdd < 0) subDay(-toAdd)
+  else {
+    val resultHour = hour.h + toAdd
+    if (resultHour > 23)
+      GregDate.create(year.y, month.m, day.d, 0, minute.m, second.s).addDay(1).addHour(resultHour - 24)
+    else
+      GregDate.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
+  }
+
+  @tailrec
+  final def subHour(toSub: Int): GregDate = if (toSub == 0) this
+  else if (toSub < 0) addHour(-toSub)
+  else {
+    val resultHour = hour.h - toSub
+    if (resultHour < 0)
+      GregDate.create(year.y, month.m, day.d, 23, minute.m, second.s).subDay(1).subHour(-resultHour)
+    else
+      GregDate.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
+  }
+
+  @tailrec
+  final def addMinute(toAdd: Int): GregDate = if (toAdd == 0) this
+  else if (toAdd < 0) subMinute(-toAdd)
+  else {
+    val resultMinute = minute.m + toAdd
+    if (resultMinute > 59)
+      GregDate.create(year.y, month.m, day.d, hour.h, 0, second.s).addHour(1).addMinute(resultMinute - 60)
+    else
+      GregDate.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
+  }
+
+  @tailrec
+  final def subMinute(toSub: Int): GregDate = if (toSub == 0) this
+  else if (toSub < 0) addMinute(-toSub)
+  else {
+    val resultMinute = minute.m - toSub
+    if (resultMinute < 0)
+      GregDate.create(year.y, month.m, day.d, hour.h, 59, second.s).subHour(1).subMinute(-resultMinute)
+    else
+      GregDate.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
+  }
+
+  @tailrec
+  final def addSecond(toAdd: Int): GregDate = if (toAdd == 0) this
+  else if (toAdd < 0) subSecond(-toAdd)
+  else {
+    val resultSecond = second.s + toAdd
+    if (resultSecond > 59)
+      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, 0).addMinute(1).addSecond(resultSecond - 60)
+    else
+      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
+
+  }
+
+  @tailrec
+  final def subSecond(toSub: Int): GregDate = if (toSub == 0) this
+  else if (toSub < 0) addSecond(-toSub)
+  else {
+    val resultSecond = second.s - toSub
+    if (resultSecond < 0)
+      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, 59).subMinute(1).subSecond(-resultSecond)
+    else
+      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
+
+  }
+
+
 }
 
 
@@ -65,7 +207,7 @@ object GregDate {
     else oneDay * (1 until month.m).map(a => Month(a).daysOfMonth(isLeap)).reduce((a, b) => a + b)
   }
 
-  def toRef = new DateConverter[GregDate, RefDate] {
+  implicit def toRef = new DateConverter[GregDate, RefDate] {
     def convert(a: GregDate) = RefDate(Millisecond(
       yearToMillisecs(a) +
         monthToMillisecs(a) +
@@ -80,7 +222,7 @@ object GregDate {
   val zeroDate = GregDate(Year(1970), Month(1), Day(1), Hour(0), Minute(0), Second(0), Millisecond(0))
   val refHelper = ((new FastCalendarCreator(zeroDate)) -> Second(1) -> Minute(1) -> Hour(1) -> Day(1) -> Month(1) -> Year(1)).finished
 
-  def fromRef = new DateConverter[RefDate, GregDate] {
+  implicit def fromRef = new DateConverter[RefDate, GregDate] {
     def convert(a: RefDate) = refHelper(a)
   }
 }
