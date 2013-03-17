@@ -181,7 +181,7 @@ object GregDate {
   private def yearToMillisecs(a: GregDate) = {
     val years = a.year.y - 1970
     val leapYears = if (years > 0) numberOfLeapYears(1970, a.year.y - 1)
-    else numberOfLeapYears(y, 1970 - 1)
+    else numberOfLeapYears(a.year.y, 1970 - 1)
     leapLessYear * (years - leapYears) + leapYear * leapYears
   }
 
@@ -212,7 +212,7 @@ object GregDate {
   implicit val toRef = new DateConverter[GregDate, RefDate] {
     def convert(a: GregDate) = RefDate(Millisecond(
       yearToMillisecs(a) +
-        monthToMillisecs(a) +
+        monthToMillisecs(a, isLeapYear(a.year.y)) +
         oneDay * (a.day.d - 1) +
         oneHour * a.hour.h +
         oneMinute * a.min.m +
