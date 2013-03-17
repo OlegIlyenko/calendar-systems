@@ -8,31 +8,41 @@ package calendar.base
 trait Date {
   type D <: Date
 
-  def ??? = throw new IllegalStateException()
+  def toCalendar[A](implicit evidence: DateConverter[D, A]) = evidence.convert(this.asInstanceOf[D])
 
-  def toCalendar[A](implicit evidence: DateConverter[D, A]) =
-    evidence.convert(this.asInstanceOf[D])
-
-  def +[T <: Date](elem : DateElement[T])
-                  (implicit back : DateConverter[T,D], to: DateConverter[D,T]) : D = {
+  def +[T <: Date](elem: DateElement[T])(implicit back: DateConverter[T, D], to: DateConverter[D, T]): D = {
     back.convert(to.convert(this).add(elem))
   }
 
-  def -[T <: Date](elem : DateElement[T])
-                  (implicit back : DateConverter[T,D], to: DateConverter[D,T]) : D = {
-    back.convert(to.convert(this).delete(elem))
+  def -[T <: Date](elem: DateElement[T])(implicit back: DateConverter[T, D], to: DateConverter[D, T]): D = {
+    back.convert(to.convert(this).sub(elem))
   }
 
+  def <[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
+    me.convert(this).smaller(it.convert(date))
 
-  def < = ???
-  def <= = ???
-  def > = ???
-  def >= = ???
-  def == = ???
+  def >[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
+    me.convert(this).greater(it.convert(date))
+
+  def <=[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) = {
+    val i = me.convert(this)
+    val that = it.convert(date)
+    i.smaller(that) || i.equal(that)
+  }
+
+  def >=[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) = {
+    val i = me.convert(this)
+    val that = it.convert(date)
+    i.greater(that) || i.equal(that)
+  }
+
+  def ==[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
+    me.convert(this).equal(it.convert(date))
 
 
-  def add(elem : DateElement[D]) : D
-  def delete(elem : DateElement[D]) : D
+  def add(elem: DateElement[D]): D
+
+  def sub(elem: DateElement[D]): D
 }
 
 

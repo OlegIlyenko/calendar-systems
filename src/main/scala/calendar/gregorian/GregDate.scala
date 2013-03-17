@@ -21,7 +21,7 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
     case Second(s) => addSecond(s)
   }
 
-  def delete(elem: DateElement[D]) = elem match {
+  def sub(elem: DateElement[D]) = elem match {
     case Year(y) => addYear(-y)
     case Month(m) => subMonth(m)
     case Day(d) => subDay(d)
