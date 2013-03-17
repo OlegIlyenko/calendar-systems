@@ -46,9 +46,9 @@ trait Date {
     me.convert(this.asInstanceOf[D]).millis.millis - it.convert(date).millis.millis
 
 
-  private def add[T <: Date](elem: DateElement[T]): T
+  def add(elem: DateElement[D]): D
 
-  private def sub[T <: Date](elem: DateElement[T]): T
+  def sub(elem: DateElement[D]): D
 }
 
 

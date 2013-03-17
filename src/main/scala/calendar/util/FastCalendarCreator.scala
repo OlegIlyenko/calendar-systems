@@ -11,12 +11,13 @@ import annotation.tailrec
  * the name is a bit misleading. The calendar is fast created, but is very slow in calculation
  * </p>
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
- * @param zeroDate the reference date for RefDate(0)
  */
-class FastCalendarCreator[D <: Date](zeroDate: D) {
+// todo make me a trait so it sees the implicit functions
+trait FastCalendarCreator[D <: Date] {
 
-  var iters: List[DateElement[D]] = List()
-  val zero = BigInt(0)
+  def zeroDate : D
+  private var iters: List[DateElement[D]] = List()
+  private val zero = BigInt(0)
 
   /**
    * Iterater to step to the correct date
@@ -26,6 +27,8 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
     iters = iterDate :: iters
     this
   }
+
+  implicit val toRef : DateConverter[D, RefDate]
 
   /**
    * creates the fromRef date
@@ -62,7 +65,7 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
               // decrement seconds
               nextIncrementSeconds = false
               nextAccuIterDate = accuIterDate
-              nextAccuDate = accuDate + accuIterDate.head
+              nextAccuDate = accuDate.add(accuIterDate.head)
               // seconds here are positive
               //nextAccuSeconds = accuSeconds - accuIterDate.head.toSecondsForAddition(accuDate)
               nextAccuSeconds = accuSeconds - accuDate.diff(nextAccuDate)
@@ -73,7 +76,7 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
               // decrement date
               nextIncrementSeconds = true
               nextAccuIterDate = accuIterDate
-              nextAccuDate = accuDate - accuIterDate.head
+              nextAccuDate = accuDate.sub(accuIterDate.head)
               // seconds here are negative
               //nextAccuSeconds = accuSeconds + accuIterDate.head.toSecondsForSubtraction(accuDate)
               nextAccuSeconds = accuSeconds + accuDate.diff(nextAccuDate)

@@ -160,7 +160,7 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
 }
 
 
-object GregDate {
+object GregDate extends  FastCalendarCreator[GregDate] {
 
   def create(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int) =
     GregDate(Year(year), Month(month), Day(day), Hour(hour), Minute(minute), Second(second), Millisecond(0))
@@ -208,7 +208,6 @@ object GregDate {
     else oneDay * (1 until month.m).map(a => Month(a).daysOfMonth(isLeap)).reduce((a, b) => a + b)
   }
 
-  // todo make me val
   implicit val toRef = new DateConverter[GregDate, RefDate] {
     def convert(a: GregDate) = RefDate(Millisecond(
       yearToMillisecs(a) +
@@ -221,8 +220,8 @@ object GregDate {
     ))
   }
 
-  val zeroDate = GregDate(Year(1970), Month(1), Day(1), Hour(0), Minute(0), Second(0), Millisecond(0))
-  val refHelper = ((new FastCalendarCreator(zeroDate)) -> Second(1) -> Minute(1) -> Hour(1) -> Day(1) -> Month(1) -> Year(1)).finished
+  override val zeroDate = GregDate(Year(1970), Month(1), Day(1), Hour(0), Minute(0), Second(0), Millisecond(0))
+  val refHelper = (this -> Second(1) -> Minute(1) -> Hour(1) -> Day(1) -> Month(1) -> Year(1)).finished
 
   // todo make me val
   implicit val fromRef = new DateConverter[RefDate, GregDate] {

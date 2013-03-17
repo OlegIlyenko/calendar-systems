@@ -11,11 +11,11 @@ case class RefDate(millis : Millisecond) extends Date {
   type D = RefDate
 
   def add(elem: DateElement[RefDate#D]) = elem match {
-    case Millisecond(m) => millis.millis + m
+    case Millisecond(m) => RefDate(Millisecond(millis.millis + m))
   }
 
   def sub(elem: DateElement[RefDate#D]) = elem match {
-    case Millisecond(m) => millis.millis - m
+    case Millisecond(m) => RefDate(Millisecond(millis.millis - m))
   }
 
   def greater(date : RefDate) = millis.millis > date.millis.millis
