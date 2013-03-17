@@ -39,6 +39,12 @@ trait Date {
   def ==[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
     me.convert(this).equal(it.convert(date))
 
+  /**
+   * @return seconds that differ between the other date
+   */
+  def diff[T <: Date](date : T)(implicit me : DateConverter[D, RefDate], it : DateConverter[T, RefDate]) =
+    me.convert(this).millis.millis - it.convert(date).millis.millis
+
 
   def add(elem: DateElement[D]): D
 

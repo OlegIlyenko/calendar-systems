@@ -44,7 +44,6 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
        */
       @tailrec
       def step(incrementSeconds: Boolean, accuSeconds: BigInt, accuIterDate: List[DateElement[D]], accuDate: D): D = {
-        // todo create a guard for endless loops
         if (accuSeconds == 0) accuDate
         else {
           var nextIncrementSeconds = incrementSeconds
@@ -66,7 +65,8 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
               nextAccuIterDate = accuIterDate
               nextAccuDate = accuDate + accuIterDate.head
               // seconds here are positive
-              nextAccuSeconds = accuSeconds - accuIterDate.head.toSecondsForAddition(accuDate)
+              //nextAccuSeconds = accuSeconds - accuIterDate.head.toSecondsForAddition(accuDate)
+              nextAccuSeconds = accuSeconds - accuDate.diff(nextAccuDate)
             }
           } else {
             if (incrementSeconds) {
@@ -76,7 +76,8 @@ class FastCalendarCreator[D <: Date](zeroDate: D) {
               nextAccuIterDate = accuIterDate
               nextAccuDate = accuDate - accuIterDate.head
               // seconds here are negative
-              nextAccuSeconds = accuSeconds + accuIterDate.head.toSecondsForSubtraction(accuDate)
+              //nextAccuSeconds = accuSeconds + accuIterDate.head.toSecondsForSubtraction(accuDate)
+              nextAccuSeconds = accuSeconds + accuDate.diff(nextAccuDate)
             } else {
               nextIncrementSeconds = true
               nextAccuSeconds = accuSeconds
