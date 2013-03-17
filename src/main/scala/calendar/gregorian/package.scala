@@ -8,11 +8,11 @@ import base.DateElement
  */
 package object gregorian {
 
-  case class Second(s : BigInt) extends DateElement[GregDate]
-  case class Minute(m : BigInt) extends DateElement[GregDate]
-  case class Hour(h : BigInt) extends DateElement[GregDate]
-  case class Day(d : BigInt) extends DateElement[GregDate]
-  case class Month(m : BigInt) extends DateElement[GregDate]{
+  case class Second(s : Int) extends DateElement[GregDate]
+  case class Minute(m : Int) extends DateElement[GregDate]
+  case class Hour(h : Int) extends DateElement[GregDate]
+  case class Day(d : Int) extends DateElement[GregDate]
+  case class Month(m : Int) extends DateElement[GregDate]{
     def daysOfMonth(isLeap: Boolean): Int = m % 12 match {
       case 1 => 31
       case 2 => if (isLeap) 29 else 28
@@ -28,5 +28,5 @@ package object gregorian {
       case 0 => 31
     }
   }
-  case class Year(y : BigInt) extends DateElement[GregDate]
+  case class Year(y : Int) extends DateElement[GregDate]
 }

@@ -11,44 +11,44 @@ trait Date {
   def toCalendar[A](implicit evidence: DateConverter[D, A]) = evidence.convert(this.asInstanceOf[D])
 
   def +[T <: Date](elem: DateElement[T])(implicit back: DateConverter[T, D], to: DateConverter[D, T]): D = {
-    back.convert(to.convert(this).add(elem))
+    back.convert(to.convert(this.asInstanceOf[D]).add(elem))
   }
 
   def -[T <: Date](elem: DateElement[T])(implicit back: DateConverter[T, D], to: DateConverter[D, T]): D = {
-    back.convert(to.convert(this).sub(elem))
+    back.convert(to.convert(this.asInstanceOf[D]).sub(elem))
   }
 
   def <[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
-    me.convert(this).smaller(it.convert(date))
+    me.convert(this.asInstanceOf[D]).smaller(it.convert(date))
 
   def >[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
-    me.convert(this).greater(it.convert(date))
+    me.convert(this.asInstanceOf[D]).greater(it.convert(date))
 
   def <=[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) = {
-    val i = me.convert(this)
+    val i = me.convert(this.asInstanceOf[D])
     val that = it.convert(date)
     i.smaller(that) || i.equal(that)
   }
 
   def >=[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) = {
-    val i = me.convert(this)
+    val i = me.convert(this.asInstanceOf[D])
     val that = it.convert(date)
     i.greater(that) || i.equal(that)
   }
 
   def ==[T <: Date](date: T)(implicit me: DateConverter[D, RefDate], it: DateConverter[T, RefDate]) =
-    me.convert(this).equal(it.convert(date))
+    me.convert(this.asInstanceOf[D]).equal(it.convert(date))
 
   /**
    * @return seconds that differ between the other date
    */
   def diff[T <: Date](date : T)(implicit me : DateConverter[D, RefDate], it : DateConverter[T, RefDate]) =
-    me.convert(this).millis.millis - it.convert(date).millis.millis
+    me.convert(this.asInstanceOf[D]).millis.millis - it.convert(date).millis.millis
 
 
-  def add(elem: DateElement[D]): D
+  private def add[T <: Date](elem: DateElement[T]): T
 
-  def sub(elem: DateElement[D]): D
+  private def sub[T <: Date](elem: DateElement[T]): T
 }
 
 

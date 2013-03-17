@@ -197,6 +197,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     checkDate(GregDate.create(2000, 6, 5, 3, 2, 1))
   }
 
+  /*
   it should "add correct" in  {
     val date1 = GregDate.create(2000, 6, 6, 3, 2, 1)
     val date2 = GregDate.create(2000, 6, 5, 3, 2, 1)
@@ -207,6 +208,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     // assert(date1.toRef == (date2.toRef + Day(1)), "refcal addtion does not work")
   }
 
+  */
   it should "substract correct" ignore {
     // todo write me
   }
