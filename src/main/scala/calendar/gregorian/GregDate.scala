@@ -203,7 +203,7 @@ object GregDate {
       false
   }
 
-  private def monthToMillisecs(month: Month, isLeap: Boolean) = {
+  private def monthToMillisecs(month: Month, isLeap: Boolean) : BigInt = {
     if (month.m == 1) 0
     else oneDay * (1 until month.m).map(a => Month(a).daysOfMonth(isLeap)).reduce((a, b) => a + b)
   }
@@ -212,7 +212,7 @@ object GregDate {
   implicit val toRef = new DateConverter[GregDate, RefDate] {
     def convert(a: GregDate) = RefDate(Millisecond(
       yearToMillisecs(a) +
-        monthToMillisecs(a, isLeapYear(a.year.y)) +
+        monthToMillisecs(a.month, isLeapYear(a.year.y)) +
         oneDay * (a.day.d - 1) +
         oneHour * a.hour.h +
         oneMinute * a.min.m +
