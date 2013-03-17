@@ -1,7 +1,7 @@
 package calendar.base
 
 /**
- * Date holding seconds since
+ * Date holding milliseconds since
  *
  * seconds since midnight, January 1, 1970 UTC
  *
@@ -12,3 +12,4 @@ class RefDate extends Date {
 
 }
 
+case class Millisecond(millis : BigInt) extends DateElement

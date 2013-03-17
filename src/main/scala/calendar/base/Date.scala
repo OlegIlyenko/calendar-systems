@@ -30,7 +30,7 @@ trait Date {
   def >= = ???
   def == = ???
 
-  // the following has to be defined be the user
+
   def add(elem : DateElement[D]) : D
   def delete(elem : DateElement[D]) : D
 }
