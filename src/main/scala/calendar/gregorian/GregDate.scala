@@ -12,7 +12,7 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   extends Date {
   type D = GregDate
 
-  def add(elem: DateElement[GregDate#D]) = elem match {
+  def add(elem: DateElement[D]) = elem match {
     case Year(y) => addYear(y)
     case Month(m) => addMonth(m)
     case Day(d) => addDay(d)
@@ -21,7 +21,7 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
     case Second(s) => addSecond(s)
   }
 
-  def delete(elem: DateElement[GregDate#D]) = elem match {
+  def delete(elem: DateElement[D]) = elem match {
     case Year(y) => subYear(y)
     case Month(m) => subMonth(m)
     case Day(d) => subDay(d)
@@ -31,11 +31,11 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   }
 
   def addYear(y: Int): GregDate = {
-    GregDate.create(year.y + y, month.m, day.d, hour.h, minute.m, second.s)
+    GregDate.create(year.y + y, month.m, day.d, hour.h, min.m, sec.s)
   }
 
   def subYear(y: Int): GregDate = {
-    GregDate.create(year.y - y, month.m, day.d, hour.h, minute.m, second.s)
+    GregDate.create(year.y - y, month.m, day.d, hour.h, min.m, sec.s)
   }
 
 
@@ -45,9 +45,9 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   else {
     val resultMonth = month.m + toAdd
     if (resultMonth > 12)
-      GregDate.create(year.y, 1, day.d, hour.h, minute.m, second.s).addYear(1).addMonth(resultMonth - 13)
+      GregDate.create(year.y, 1, day.d, hour.h, min.m, sec.s).addYear(1).addMonth(resultMonth - 13)
     else
-      GregDate.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
+      GregDate.create(year.y, resultMonth, day.d, hour.h, min.m, sec.s)
   }
 
 
@@ -57,9 +57,9 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   else {
     val resultMonth = month.m - toSub
     if (resultMonth < 1)
-      GregDate.create(year.y, 12, day.d, hour.h, minute.m, second.s).subYear(1).subMonth(-resultMonth)
+      GregDate.create(year.y, 12, day.d, hour.h, min.m, sec.s).subYear(1).subMonth(-resultMonth)
     else
-      GregDate.create(year.y, resultMonth, day.d, hour.h, minute.m, second.s)
+      GregDate.create(year.y, resultMonth, day.d, hour.h, min.m, sec.s)
   }
 
 
@@ -70,9 +70,9 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
     val m = month.daysOfMonth(isLeap)
     val resultDay = day.d + toAdd
     if (resultDay > m)
-      GregDate.create(year.y, month.m, 1, hour.h, minute.m, second.s).addMonth(1).addDay(resultDay - m - 1)
+      GregDate.create(year.y, month.m, 1, hour.h, min.m, sec.s).addMonth(1).addDay(resultDay - m - 1)
     else
-      GregDate.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
+      GregDate.create(year.y, month.m, resultDay, hour.h, min.m, sec.s)
   }
 
 
@@ -82,9 +82,9 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   else {
     val resultDay = day.d - toSub
     if (resultDay < 1)
-      GregDate.create(year.y, month.m, Month(month.m - 1).daysOfMonth(isLeap), hour.h, minute.m, second.s).subMonth(1).subDay(-resultDay - 1)
+      GregDate.create(year.y, month.m, Month(month.m - 1).daysOfMonth(isLeap), hour.h, min.m, sec.s).subMonth(1).subDay(-resultDay - 1)
     else
-      GregDate.create(year.y, month.m, resultDay, hour.h, minute.m, second.s)
+      GregDate.create(year.y, month.m, resultDay, hour.h, min.m, sec.s)
   }
 
   @tailrec
@@ -93,9 +93,9 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   else {
     val resultHour = hour.h + toAdd
     if (resultHour > 23)
-      GregDate.create(year.y, month.m, day.d, 0, minute.m, second.s).addDay(1).addHour(resultHour - 24)
+      GregDate.create(year.y, month.m, day.d, 0, min.m, sec.s).addDay(1).addHour(resultHour - 24)
     else
-      GregDate.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
+      GregDate.create(year.y, month.m, day.d, resultHour, min.m, sec.s)
   }
 
   @tailrec
@@ -104,42 +104,42 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   else {
     val resultHour = hour.h - toSub
     if (resultHour < 0)
-      GregDate.create(year.y, month.m, day.d, 23, minute.m, second.s).subDay(1).subHour(-resultHour)
+      GregDate.create(year.y, month.m, day.d, 23, min.m, sec.s).subDay(1).subHour(-resultHour)
     else
-      GregDate.create(year.y, month.m, day.d, resultHour, minute.m, second.s)
+      GregDate.create(year.y, month.m, day.d, resultHour, min.m, sec.s)
   }
 
   @tailrec
   final def addMinute(toAdd: Int): GregDate = if (toAdd == 0) this
   else if (toAdd < 0) subMinute(-toAdd)
   else {
-    val resultMinute = minute.m + toAdd
+    val resultMinute = min.m + toAdd
     if (resultMinute > 59)
-      GregDate.create(year.y, month.m, day.d, hour.h, 0, second.s).addHour(1).addMinute(resultMinute - 60)
+      GregDate.create(year.y, month.m, day.d, hour.h, 0, sec.s).addHour(1).addMinute(resultMinute - 60)
     else
-      GregDate.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
+      GregDate.create(year.y, month.m, day.d, hour.h, resultMinute, sec.s)
   }
 
   @tailrec
   final def subMinute(toSub: Int): GregDate = if (toSub == 0) this
   else if (toSub < 0) addMinute(-toSub)
   else {
-    val resultMinute = minute.m - toSub
+    val resultMinute = min.m - toSub
     if (resultMinute < 0)
-      GregDate.create(year.y, month.m, day.d, hour.h, 59, second.s).subHour(1).subMinute(-resultMinute)
+      GregDate.create(year.y, month.m, day.d, hour.h, 59, sec.s).subHour(1).subMinute(-resultMinute)
     else
-      GregDate.create(year.y, month.m, day.d, hour.h, resultMinute, second.s)
+      GregDate.create(year.y, month.m, day.d, hour.h, resultMinute, sec.s)
   }
 
   @tailrec
   final def addSecond(toAdd: Int): GregDate = if (toAdd == 0) this
   else if (toAdd < 0) subSecond(-toAdd)
   else {
-    val resultSecond = second.s + toAdd
+    val resultSecond = sec.s + toAdd
     if (resultSecond > 59)
-      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, 0).addMinute(1).addSecond(resultSecond - 60)
+      GregDate.create(year.y, month.m, day.d, hour.h, min.m, 0).addMinute(1).addSecond(resultSecond - 60)
     else
-      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
+      GregDate.create(year.y, month.m, day.d, hour.h, min.m, resultSecond)
 
   }
 
@@ -147,11 +147,11 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
   final def subSecond(toSub: Int): GregDate = if (toSub == 0) this
   else if (toSub < 0) addSecond(-toSub)
   else {
-    val resultSecond = second.s - toSub
+    val resultSecond = sec.s - toSub
     if (resultSecond < 0)
-      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, 59).subMinute(1).subSecond(-resultSecond)
+      GregDate.create(year.y, month.m, day.d, hour.h, min.m, 59).subMinute(1).subSecond(-resultSecond)
     else
-      GregDate.create(year.y, month.m, day.d, hour.h, minute.m, resultSecond)
+      GregDate.create(year.y, month.m, day.d, hour.h, min.m, resultSecond)
 
   }
 

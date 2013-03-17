@@ -187,11 +187,11 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     checkDate(GregorianDate$.create(2000, 4, 3, 1, 0, 0))
   }
 
-  it should "retransform correct with minute precission" in  {
+  it should "retransform correct with min precission" in  {
     checkDate(GregorianDate$.create(2000, 5, 4, 2, 1, 0))
   }
 
-  it should "retransform correct with second precission" in   {
+  it should "retransform correct with sec precission" in   {
     checkDate(GregorianDate$.create(2000, 6, 5, 3, 2, 1))
   }
 
