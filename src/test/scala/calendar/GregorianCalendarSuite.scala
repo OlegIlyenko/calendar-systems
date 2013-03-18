@@ -1,9 +1,11 @@
 package calendar
 
-import base.{RefDate, DateElement}
+import base._
 import gregorian.{Day, Month, GregDate, Year}
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import calendar.base.Date._
+import calendar.base.Convert._
 
 /**
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
@@ -40,94 +42,102 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     assert(GregDate.numberOfLeapYears(1999, 2001) == 0, "2000")
   }
 
-  def checkDateElementSubtraction(toSub : GregDate,
-                                  elem : DateElement,
-                                  resultingSeconds : BigInt) {
-    val result : GregDate = toSub - elem
+
+  def checkDateElementSubtraction[E, T]
+      (toSub : GregDate, elem: E, resultingSeconds : BigInt)
+      // you asked me for this :) (most probably can be simplified)
+      (implicit dateEv: Date[T], elemEv: DateElement[T, E], back: Convert[T, GregDate], to: Convert[GregDate, T],  meToRef: Convert[GregDate, RefDate], itToRef : Convert[T, RefDate]) {
+    val result: GregDate = toSub - elem
     val subtraction : BigInt = toSub.diff(result)
     assert(subtraction == resultingSeconds,
       elem + " - " + toSub + " = " + result + " : " +  subtraction + " != " + resultingSeconds)
   }
 
-  def checkDateElementAddition(toAdd : GregDate,
-                               elem : DateElement,
-                               resultingSeconds : BigInt) {
-    val result : GregDate = toAdd + elem
-    val addition : BigInt = toAdd.diff(result)
+  def checkDateElementAddition[E, T]
+      (toAdd : GregDate, elem: E, resultingSeconds : BigInt)
+      // you asked me for this :) (most probably can be simplified)
+      (implicit dateEv: Date[T], elemEv: DateElement[T, E], back: Convert[T, GregDate], to: Convert[GregDate, T],  meToRef: Convert[GregDate, RefDate], itToRef : Convert[T, RefDate]) {
+    val result: GregDate = dateSugar(toAdd) + elem // seems that implicit does not work for + ??? O_O
+    val addition: BigInt = toAdd.diff(result)
     assert(addition == resultingSeconds,
       elem + " + " + toAdd + " = " + result + " : " +  addition + " != " + resultingSeconds)
   }
 
 
   it should "month in leap less years transform correct to seconds for subtraction" in {
-    checkDateElementSubtraction(GregDate.create(1971,12,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1971,11,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1971,10,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1971,9 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1971,8 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1971,7 ,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1971,6 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1971,5 ,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1971,4 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1971,3 ,1,0,0,0), Month(1), month28)
-    checkDateElementSubtraction(GregDate.create(1971,2 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1971,1 ,1,0,0,0), Month(1), month31)
+    // ***********************************************
+    // * Seems that type inference does not work in this case :(
+    // ***********************************************
+
+    checkDateElementSubtraction[Millisecond, RefDate](GregDate.create(1971,12,1,0,0,0), Millisecond(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,12,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,11,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,10,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,9 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,8 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,7 ,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,6 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,5 ,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,4 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,3 ,1,0,0,0), Month(1), month28)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,2 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1971,1 ,1,0,0,0), Month(1), month31)
   }
 
   it should "month in leap less years transform correct to seconds for addition" in {
-    checkDateElementAddition(GregDate.create(1971,12,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1971,11,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1971,10,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1971,9 ,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1971,8 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1971,7 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1971,6 ,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1971,5 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1971,4 ,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1971,3 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1971,2 ,1,0,0,0), Month(1), month28)
-    checkDateElementAddition(GregDate.create(1971,1 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,12,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,11,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,10,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,9 ,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,8 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,7 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,6 ,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,5 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,4 ,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,3 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,2 ,1,0,0,0), Month(1), month28)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1971,1 ,1,0,0,0), Month(1), month31)
   }
 
   it should "month in leap years transform correct to seconds for subtraction" in {
-    checkDateElementSubtraction(GregDate.create(1972,12,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1972,11,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1972,10,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1972,9 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1972,8 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1972,7 ,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1972,6 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1972,5 ,1,0,0,0), Month(1), month30)
-    checkDateElementSubtraction(GregDate.create(1972,4 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1972,3 ,1,0,0,0), Month(1), month29)
-    checkDateElementSubtraction(GregDate.create(1972,2 ,1,0,0,0), Month(1), month31)
-    checkDateElementSubtraction(GregDate.create(1972,1 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,12,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,11,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,10,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,9 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,8 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,7 ,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,6 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,5 ,1,0,0,0), Month(1), month30)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,4 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,3 ,1,0,0,0), Month(1), month29)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,2 ,1,0,0,0), Month(1), month31)
+    checkDateElementSubtraction[Month, GregDate](GregDate.create(1972,1 ,1,0,0,0), Month(1), month31)
   }
 
   it should "month in leap years transform correct to seconds for addition" in {
-    checkDateElementAddition(GregDate.create(1972,12,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1972,11,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1972,10,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1972,9 ,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1972,8 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1972,7 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1972,6 ,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1972,5 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1972,4 ,1,0,0,0), Month(1), month30)
-    checkDateElementAddition(GregDate.create(1972,3 ,1,0,0,0), Month(1), month31)
-    checkDateElementAddition(GregDate.create(1972,2 ,1,0,0,0), Month(1), month29)
-    checkDateElementAddition(GregDate.create(1972,1 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,12,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,11,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,10,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,9 ,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,8 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,7 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,6 ,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,5 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,4 ,1,0,0,0), Month(1), month30)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,3 ,1,0,0,0), Month(1), month31)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,2 ,1,0,0,0), Month(1), month29)
+    checkDateElementAddition[Month, GregDate](GregDate.create(1972,1 ,1,0,0,0), Month(1), month31)
   }
 
 
   def checkDate(date : GregDate) {
-    lazy val ref = RefDate.as(date)
+    lazy val ref = RefDate(date)
     try{
       ref
     }catch {
       case _: Throwable => assert(condition = false, clue = "could not transform to refDate " + date)
     }
-    lazy val fromRef = GregDate.fromRef(ref)
+    lazy val fromRef: GregDate = Date.RefToGreg.convert(ref)
     try{
       fromRef
     } catch {
@@ -135,7 +145,7 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     }
 
     try {
-      assert(date == fromRef, "" + date + " != " + fromRef + " => " + RefDate.as(date).millis.millis + " != " + RefDate.as(fromRef).millis.millis)
+      assert(date == fromRef, "" + date + " != " + fromRef + " => " + RefDate(date).millis.millis + " != " + RefDate(fromRef).millis.millis)
     } catch {
       case _: Throwable => assert(condition = false, clue = "could not equal dates")
     }
@@ -146,8 +156,8 @@ class GregorianCalendarSuite extends FlatSpec with ShouldMatchers{
     val date2 = GregDate.create(2000, 6, 5, 3, 2, 1)
     assert(date1 == date2)
     assert(date1.diff(date2) == 0)
-    assert(date1 == RefDate.as(date2))
-    assert(RefDate.as(date1) == date2)
+    assert(date1 == RefDate(date2))
+    assert(RefDate(date1) == date2)
   }
 
 

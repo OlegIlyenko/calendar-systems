@@ -1,6 +1,7 @@
 package calendar.util
 
 import calendar.base._
+import Date._
 import annotation.tailrec
 
 /**
@@ -13,22 +14,22 @@ import annotation.tailrec
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  */
 // todo make me a trait so it sees the implicit functions
-trait FastCalendarCreator[D <: Date] {
+abstract class FastCalendarCreator[D](implicit dateEv: Date[D], toRefEv: Convert[D, RefDate]) {
 
-  def zeroDate : D
-  private var iters: List[DateElement[D]] = List()
-  private val zero = BigInt(0)
+  def zeroDate: D
+  private type AddSubDate = (D => D, D => D)
+  private var iters: List[AddSubDate] = Nil
 
   /**
    * Iterater to step to the correct date
-   * @param iterDate step size to create the date
+   * @param elem step size to create the date
+   *
+   * FIXME: I recommend not to use `->` as the name of the method, becuase it's often used to create tuples, and can be confusing
    */
-  def ->(iterDate: DateElement[D]): FastCalendarCreator[D] = {
-    iters = iterDate :: iters
+  def ->[E](elem: E)(implicit ev: DateElement[D, E]): FastCalendarCreator[D] = {
+    iters = (ev.add(_: D, elem), ev.sub(_: D, elem)) :: iters
     this
   }
-
-  implicit val toRef : DateConverter[D, RefDate]
 
   /**
    * creates the fromRef date
@@ -45,7 +46,7 @@ trait FastCalendarCreator[D <: Date] {
        * @return a date
        */
       @tailrec
-      def step(incrementSeconds: Boolean, accuSeconds: BigInt, accuIterDate: List[DateElement[D]], accuDate: D): D = {
+      def step(incrementSeconds: Boolean, accuSeconds: BigInt, accuIterDate: List[AddSubDate], accuDate: D): D = {
         if (accuSeconds == 0) accuDate
         else {
           var nextIncrementSeconds = incrementSeconds
@@ -65,7 +66,7 @@ trait FastCalendarCreator[D <: Date] {
               // decrement seconds
               nextIncrementSeconds = false
               nextAccuIterDate = accuIterDate
-              nextAccuDate = accuDate.add(accuIterDate.head)
+              nextAccuDate = accuIterDate.head._1(accuDate)
               // seconds here are positive
               //nextAccuSeconds = accuSeconds - accuIterDate.head.toSecondsForAddition(accuDate)
               nextAccuSeconds = accuSeconds - accuDate.diff(nextAccuDate)
@@ -76,7 +77,7 @@ trait FastCalendarCreator[D <: Date] {
               // decrement date
               nextIncrementSeconds = true
               nextAccuIterDate = accuIterDate
-              nextAccuDate = accuDate.sub(accuIterDate.head)
+              nextAccuDate = accuIterDate.head._2(accuDate)
               // seconds here are negative
               //nextAccuSeconds = accuSeconds + accuIterDate.head.toSecondsForSubtraction(accuDate)
               nextAccuSeconds = accuSeconds + accuDate.diff(nextAccuDate)

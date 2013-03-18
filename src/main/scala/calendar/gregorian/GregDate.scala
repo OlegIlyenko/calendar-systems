@@ -8,29 +8,10 @@ import annotation.tailrec
 /**
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
-case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute, sec: Second, mil: Millisecond)
-  extends Date {
+case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute, sec: Second, mil: Millisecond) {
   type D = GregDate
 
   lazy val isLeap = GregDate.isLeapYear(year.y)
-
-  def add(elem: DateElement[D]) = elem match {
-    case Year(y) => addYear(y)
-    case Month(m) => addMonth(m)
-    case Day(d) => addDay(d)
-    case Hour(h) => addHour(h)
-    case Minute(m) => addMinute(m)
-    case Second(s) => addSecond(s)
-  }
-
-  def sub(elem: DateElement[D]) = elem match {
-    case Year(y) => subYear(y)
-    case Month(m) => subMonth(m)
-    case Day(d) => subDay(d)
-    case Hour(h) => subHour(h)
-    case Minute(m) => subMinute(m)
-    case Second(s) => subSecond(s)
-  }
 
   def addYear(y: Int): GregDate = {
     GregDate.create(year.y + y, month.m, day.d, hour.h, min.m, sec.s)
@@ -159,8 +140,14 @@ case class GregDate(year: Year, month: Month, day: Day, hour: Hour, min: Minute,
 
 }
 
+object GregDateHelper {
+  implicit object GregDateTC extends Date[GregDate]
+}
 
-object GregDate extends  FastCalendarCreator[GregDate] {
+import GregDateHelper._
+import Date._
+
+object GregDate extends FastCalendarCreator[GregDate] {
 
   def create(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int) =
     GregDate(Year(year), Month(month), Day(day), Hour(hour), Minute(minute), Second(second), Millisecond(0))
@@ -178,7 +165,7 @@ object GregDate extends  FastCalendarCreator[GregDate] {
   val oneSecond: BigInt = 1
 
 
-  private def yearToMillisecs(a: GregDate) = {
+  def yearToMillisecs(a: GregDate) = {
     val years = a.year.y - 1970
     val leapYears = if (years > 0) numberOfLeapYears(1970, a.year.y - 1)
     else numberOfLeapYears(a.year.y, 1970 - 1)
@@ -203,28 +190,16 @@ object GregDate extends  FastCalendarCreator[GregDate] {
       false
   }
 
-  private def monthToMillisecs(month: Month, isLeap: Boolean) : BigInt = {
+  def monthToMillisecs(month: Month, isLeap: Boolean) : BigInt = {
     if (month.m == 1) 0
     else oneDay * (1 until month.m).map(a => Month(a).daysOfMonth(isLeap)).reduce((a, b) => a + b)
-  }
-
-  implicit val toRef = new DateConverter[GregDate, RefDate] {
-    def convert(a: GregDate) = RefDate(Millisecond(
-      yearToMillisecs(a) +
-        monthToMillisecs(a.month, isLeapYear(a.year.y)) +
-        oneDay * (a.day.d - 1) +
-        oneHour * a.hour.h +
-        oneMinute * a.min.m +
-        oneSecond * a.sec.s +
-        a.mil.millis
-    ))
   }
 
   override val zeroDate = GregDate(Year(1970), Month(1), Day(1), Hour(0), Minute(0), Second(0), Millisecond(0))
   val refHelper = (this -> Second(1) -> Minute(1) -> Hour(1) -> Day(1) -> Month(1) -> Year(1)).finished
 
   // todo make me val
-  implicit val fromRef = new DateConverter[RefDate, GregDate] {
-    def convert(a: RefDate) = refHelper(a)
-  }
+
+
+  implicit val GregDateTC = GregDateHelper.GregDateTC
 }
