@@ -1,6 +1,7 @@
 package calendar.core
 
 import calendar.base.RefDate
+import scala.annotation.implicitNotFound
 
 
 /**
@@ -25,6 +26,7 @@ trait Date[D <: Date[D]] {
   def <[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.less(Date.this, that)
 
   def >[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.greater(Date.this, that)
+
 }
 
 

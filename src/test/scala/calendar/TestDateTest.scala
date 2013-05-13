@@ -2,8 +2,8 @@ package calendar
 
 
 import dummy._
-import dummy.InterDate._
 import dummy.UserDate._
+import dummy.InterDate._
 import dummy.TestDate._
 
 
@@ -14,12 +14,10 @@ import org.scalatest.FlatSpec
  */
 class TestDateTest extends FlatSpec {
 
-  import calendar.base._
-
   "Operation with own DateElements" should "find correct Operator" in {
     val date = TestDate(0, 0)
-    assert(date + Foo(1) == TestDate(1, 0))
-    assert(date + Bar(1) == TestDate(0, 1))
+    assert((date + Foo(1)) == TestDate(1, 0))
+    assert((date + Bar(1)) == TestDate(0, 1))
   }
 
   "Operation with other DateElements" should "find correct Operator" in {
