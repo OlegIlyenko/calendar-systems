@@ -17,6 +17,7 @@ object InterDate {
   implicit val interOpBar = new DateOp[InterDate, Bar] {
     def add(a: InterDate, e: Bar): InterDate = InterDate(a.i - e.i)
   }
+
   implicit val interEqual = new LazyCompare[InterDate, InterDate] {
     def equal(a: InterDate, b: InterDate): Boolean = a.i == b.i
 

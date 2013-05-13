@@ -8,6 +8,8 @@ import calendar.core._
  *
  * seconds since midnight, January 1, 1970 UTC
  *
+ * @todo this should be "plug in"-able some day.
+ *       so everybody can choose what algebraic core will be used.
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
 package object base {
@@ -24,6 +26,7 @@ package object base {
 
 
   // --------------------- static configuration
+
   object RefDate {
     def as[T <: Date[T]](date: T)(implicit ev: DateConverter[T, RefDate]) = ev.convert(date)
   }

@@ -6,9 +6,7 @@ import calendar.core._
 /**
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
-case class UserDate(i: Int) extends Date[UserDate] {
-
-}
+case class UserDate(i: Int) extends Date[UserDate]
 
 object UserDate {
   implicit val toRef = new DateConverter[UserDate, RefDate] {
