@@ -14,7 +14,17 @@ trait Date[D <: Date[D]] {
 
   def -[E <: DateElement[E]](e: E)(implicit op: DateOp[D, E]) = op.add(Date.this, e.neg)
 
+  def ==[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.equal(Date.this, that)
 
+  def !=[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = !compare.equal(Date.this, that)
+
+  def <=[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.lessEqual(Date.this, that)
+
+  def >=[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.greaterEqual(Date.this, that)
+
+  def <[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.less(Date.this, that)
+
+  def >[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.greater(Date.this, that)
 }
 
 
