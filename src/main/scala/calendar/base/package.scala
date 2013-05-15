@@ -28,7 +28,7 @@ package object base {
   // --------------------- static configuration
 
   object RefDate {
-    def as[T <: Date[T]](date: T)(implicit ev: DateConverter[T, RefDate]) = ev.convert(date)
+    def as[T <: Date[T]](date: T)(implicit ev: DateTransformer[T, RefDate]) = ev.convert(date)
   }
 
 

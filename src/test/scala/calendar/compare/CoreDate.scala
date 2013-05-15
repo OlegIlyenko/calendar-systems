@@ -33,7 +33,7 @@ object CoreDate {
   implicit val opTen = new DateOp[CoreDate, Ten] {
     def add(a: CoreDate, e: Ten): CoreDate = CoreDate(a.i + 10 * e.i)
   }
-  implicit val toRef = new DateConverter[CoreDate, RefDate] {
+  implicit val toRef = new DateTransformer[CoreDate, RefDate] {
     def convert(a: CoreDate): RefDate = RefDate(a.i)
   }
 

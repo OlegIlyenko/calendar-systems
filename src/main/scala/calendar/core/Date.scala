@@ -37,7 +37,7 @@ object Date {
   /**
    * converter for identity (maybe not needed)
    */
-  implicit def identityConverter[T <: Date[T]] = new DateConverter[T, T] {
+  implicit def identityConverter[T <: Date[T]] = new DateTransformer[T, T] {
     def convert(a: T) = a
   }
 
@@ -47,8 +47,8 @@ object Date {
    */
   implicit def transformOp[A <: Date[A], E <: DateElement[E], B <: Date[B], C <: DateConnect[B, E]]
   (implicit
-   transformerA: DateConverter[A, B],
-   transformerB: DateConverter[B, A],
+   transformerA: DateTransformer[A, B],
+   transformerB: DateTransformer[B, A],
    op: DateOp[B, E]) = new DateOp[A, E] {
     def add(a: A, e: E) = transformerB.convert(op.add(transformerA.convert(a), e))
   }
@@ -58,7 +58,7 @@ object Date {
    * @todo : move me to calendar.base package (to make it more modular)
    */
   implicit def standardConverter[A <: Date[A], B <: Date[B]]
-  (implicit ev1: DateConverter[A, RefDate], ev2: DateConverter[RefDate, B]) = new DateConverter[A, B] {
+  (implicit ev1: DateTransformer[A, RefDate], ev2: DateTransformer[RefDate, B]) = new DateTransformer[A, B] {
     def convert(a: A) = ev2.convert(ev1.convert(a))
   }
 
@@ -67,7 +67,7 @@ object Date {
    * @todo : move to calendar.base package (to make it more modular)
    */
   implicit def standardCompare[A <: Date[A], B <: Date[B]]
-  (implicit transformA: DateConverter[A, RefDate], transformB: DateConverter[B, RefDate]) = new DateCompare[A, B] {
+  (implicit transformA: DateTransformer[A, RefDate], transformB: DateTransformer[B, RefDate]) = new DateCompare[A, B] {
 
     def equal(a: A, b: B): Boolean = transformA.convert(a).millis == transformB.convert(b).millis
 

@@ -27,10 +27,10 @@ object TestDate {
 
   // --------------- converters
 
-  implicit val toRef = new DateConverter[TestDate, RefDate] {
+  implicit val toRef = new DateTransformer[TestDate, RefDate] {
     def convert(a: TestDate): RefDate = RefDate(a.foo)
   }
-  implicit val fromRef = new DateConverter[RefDate, TestDate] {
+  implicit val fromRef = new DateTransformer[RefDate, TestDate] {
     def convert(a: RefDate): TestDate = TestDate(a.millis.intValue(), 0)
   }
 

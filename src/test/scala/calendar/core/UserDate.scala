@@ -9,11 +9,11 @@ import calendar.core._
 case class UserDate(i: Int) extends Date[UserDate]
 
 object UserDate {
-  implicit val toRef = new DateConverter[UserDate, RefDate] {
+  implicit val toRef = new DateTransformer[UserDate, RefDate] {
     def convert(a: UserDate): RefDate = RefDate(a.i)
   }
 
-  implicit val fromRef = new DateConverter[RefDate, UserDate] {
+  implicit val fromRef = new DateTransformer[RefDate, UserDate] {
     def convert(a: RefDate): UserDate = UserDate(a.millis.intValue())
   }
 
