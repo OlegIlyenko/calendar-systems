@@ -64,7 +64,8 @@ object Date {
 
   /**
    * standard compare object.
-   * @todo : move to calendar.base package (to make it more modular)
+   * @todo move to calendar.base package (to make it more modular)
+   * @todo move me lover prioritises to twistCompare
    */
   implicit def standardCompare[A <: Date[A], B <: Date[B]]
   (implicit transformA: DateTransformer[A, RefDate], transformB: DateTransformer[B, RefDate]) = new DateCompare[A, B] {
@@ -78,6 +79,22 @@ object Date {
     def lessEqual(a: A, b: B): Boolean = transformA.convert(a).millis <= transformB.convert(b).millis
 
     def greaterEqual(a: A, b: B): Boolean = transformA.convert(a).millis >= transformB.convert(b).millis
+  }
+
+  /**
+   * twists the definition of equality, so you don't have to implement both
+   */
+  implicit def twistCompare[A <: Date[A], B <: Date[B]]
+  (implicit twist: DateCompare[A, B]) = new DateCompare[B, A] {
+    def equal(a: B, b: A): Boolean = twist.equal(b, a)
+
+    def less(a: B, b: A): Boolean = twist.less(b, a)
+
+    def greater(a: B, b: A): Boolean = twist.greater(b, a)
+
+    def lessEqual(a: B, b: A): Boolean = twist.lessEqual(b, a)
+
+    def greaterEqual(a: B, b: A): Boolean = twist.greaterEqual(b, a)
   }
 
 
