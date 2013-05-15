@@ -1,4 +1,4 @@
-package calendar.dummy
+package calendar.core
 
 import calendar.core._
 import calendar.base._
