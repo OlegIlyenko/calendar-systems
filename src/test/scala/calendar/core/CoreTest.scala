@@ -1,5 +1,8 @@
 package calendar.core
 
+import UserDate._
+import TestDate._
+import InterDate._
 
 import org.scalatest.FlatSpec
 
