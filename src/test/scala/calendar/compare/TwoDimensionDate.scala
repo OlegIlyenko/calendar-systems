@@ -1,7 +1,9 @@
 package calendar.compare
 
-import calendar.core.{DateTransformer, DateOp, DateElement, Date}
+import calendar.core._
 import calendar.base.RefDate
+import calendar.compare.Ten
+import calendar.compare.One
 
 /**
  * a calendar system that is still under development. so i uses all that is there, without
@@ -12,6 +14,14 @@ import calendar.base.RefDate
 case class TwoDimensionDate(ten: Int, rest: Int) extends Date[TwoDimensionDate]
 
 object TwoDimensionDate {
+
+  // --- compare
+
+  implicit val equal = new LazyCompare[TwoDimensionDate, TwoDimensionDate] {
+    def equal(a: TwoDimensionDate, b: TwoDimensionDate): Boolean = a.ten == b.ten && a.rest == b.rest
+
+    def less(a: TwoDimensionDate, b: TwoDimensionDate): Boolean = if (a.ten < b.ten) true else a.rest < b.rest
+  }
 
   // --- operations
 
