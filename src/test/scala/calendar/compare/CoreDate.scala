@@ -1,7 +1,7 @@
 package calendar.compare
 
 import calendar.core._
-import calendar.base.RefDate
+import calendar.base._
 
 /**
  * This Calendar type should represent a fully implemented Calendar class.
@@ -30,6 +30,12 @@ object CoreDate {
     def less(a: CoreDate, b: CoreDate): Boolean = a.i < b.i
   }
 
+  implicit val equalRef = new LazyCompare[CoreDate, RefDate] {
+    def equal(a: CoreDate, b: RefDate): Boolean = a.i == b.millis
+
+    def less(a: CoreDate, b: RefDate): Boolean = a.i < b.millis
+  }
+
   // -- operation
 
   implicit val opOne = new DateOp[CoreDate, One] {
@@ -39,7 +45,7 @@ object CoreDate {
     def add(a: CoreDate, e: Ten): CoreDate = CoreDate(a.i + 10 * e.i)
   }
 
-  // -- transfromation
+  // transfromation
 
   implicit val toRef = new DateTransformer[CoreDate, RefDate] {
     def convert(a: CoreDate): RefDate = RefDate(a.i)

@@ -29,6 +29,7 @@ package object base {
 
   object RefDate {
     def as[T <: Date[T]](date: T)(implicit ev: DateTransformer[T, RefDate]) = ev.convert(date)
+
   }
 
 
