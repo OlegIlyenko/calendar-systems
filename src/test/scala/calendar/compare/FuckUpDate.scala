@@ -1,6 +1,7 @@
 package calendar.compare
 
-import calendar.core.{Date, LazyCompare, DateCompare}
+import calendar.core.{DateTransformer, Date, LazyCompare, DateCompare}
+import calendar.base.RefDate
 
 /**
  * This date is for test false behavior
@@ -15,4 +16,12 @@ object FuckUpDate {
     def less(a: FuckUpDate, b: ShiftTenDate): Boolean = a.i < b.i
   }
 
+  // --- toRef
+
+  implicit val toRef = new DateTransformer[FuckUpDate, RefDate] {
+    def convert(a: FuckUpDate): RefDate = RefDate(a.i)
+  }
+  implicit val fromRef = new DateTransformer[RefDate, FuckUpDate] {
+    def convert(a: RefDate): FuckUpDate = FuckUpDate(a.millis.intValue())
+  }
 }
