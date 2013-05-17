@@ -15,7 +15,7 @@ trait Date[D <: Date[D]] {
 
   def equals[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.equal(Date.this, that)
 
-  def !=[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = !compare.equal(Date.this, that)
+  // def !=[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = !compare.equal(Date.this, that)
 
   def <=[A <: Date[A]](that: A)(implicit compare: DateCompare[D, A]) = compare.lessEqual(Date.this, that)
 
