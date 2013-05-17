@@ -1,12 +1,12 @@
 package calendar.compare
 
-import calendar.core.{LazyCompare, DateCompare}
+import calendar.core.{Date, LazyCompare, DateCompare}
 
 /**
  * This date is for test false behavior
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
-case class FuckUpDate(i: Int)
+case class FuckUpDate(i: Int) extends Date[FuckUpDate]
 
 object FuckUpDate {
   implicit val equalShift = new LazyCompare[FuckUpDate, ShiftTenDate] {

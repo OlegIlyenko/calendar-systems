@@ -1,8 +1,6 @@
 package calendar.core
 
 import calendar.base.RefDate
-import scala.annotation.implicitNotFound
-
 
 /**
  * a point on the time axe

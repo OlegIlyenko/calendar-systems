@@ -2,8 +2,6 @@ package calendar.compare
 
 import calendar.core._
 import calendar.base.RefDate
-import calendar.compare.Ten
-import calendar.compare.One
 
 /**
  * a calendar system that is still under development. so i uses all that is there, without

@@ -1,13 +1,13 @@
 package calendar.compare
 
-import calendar.core.{DateTransformer, DateCompare, DateOp}
+import calendar.core.{Date, DateTransformer, DateCompare, DateOp}
 import calendar.base.RefDate
 
 /**
  * Like the Core Date but a bit less implemented and Shifted Zero
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
-case class ShiftTenDate(i: Int)
+case class ShiftTenDate(i: Int) extends Date[ShiftTenDate]
 
 object ShiftTenDate {
 
