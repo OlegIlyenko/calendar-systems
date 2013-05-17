@@ -26,6 +26,7 @@ class CoreTest extends FlatSpec {
   "UserDates" should "find correct Operator" in {
     val date = UserDate(0)
     assert(date + Foo(1) == UserDate(1))
+    assert(date == UserDate(0))
     assert(date + Bar(1) == UserDate(0))
   }
 
