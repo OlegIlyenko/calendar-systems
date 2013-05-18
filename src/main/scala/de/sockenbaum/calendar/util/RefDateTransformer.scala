@@ -30,11 +30,22 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
 
   private var elementList: List[RefDateHelper[_]] = Nil
 
+  // @todo : add implicit not found error message
   def ->[E <: DateElement[E]](element: E)(implicit op: DateOp[D, E]) {
     elementList = RefDateHelper(op, element) :: elementList
   }
 
   private def diff(a: D, b: D): BigInt = toRef.convert(a).millis - toRef.convert(b).millis
+
+  def convert(r: RefDate): D = {
+    val seconds = r.millis
+    if (seconds == 0)
+      zeroDate
+    else if (seconds < 0)
+      step(true, seconds, elementList, zeroDate)
+    else
+      step(false, seconds, elementList, zeroDate)
+  }
 
   /**
    * sub function for iteration
@@ -95,14 +106,6 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
     }
   }
 
-  def convert(r: RefDate): D = {
-    val seconds = r.millis
-    if (seconds == 0)
-      zeroDate
-    else if (seconds < 0)
-      step(true, seconds, elementList, zeroDate)
-    else
-      step(false, seconds, elementList, zeroDate)
-  }
+
 }
 
