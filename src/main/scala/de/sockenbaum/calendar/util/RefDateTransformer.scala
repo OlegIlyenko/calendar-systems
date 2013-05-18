@@ -7,23 +7,29 @@ import calendar.core._
 /**
  * This is a util to create a calendar date to RefDate transformer in
  * very short time.
- * You just have to define you Date format, the + and - function, and need a reference date
- *
+ * <p>
+ * you have to define
+ * <ul>
+ * <li> all dates belonging to the date </li>
+ * <li> a toRef Transformation </li>
+ * </ul>
+ * </p>
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  */
-trait RefDateTransformer[D <: Date[D]] extends DateTransformer[D, RefDate] {
+trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
 
   case class RefDateHelper[E <: DateElement[E]](op: DateOp[D, E], element: E)
 
-  def zeroDate: D
+  val zeroDate: D
+  val toRef: DateTransformer[D, RefDate]
 
-  var list: List[RefDateHelper[_]] = Nil
+  // @todo : this must be optimized by step size analysis
+  var elementList: List[RefDateHelper[_]] = Nil
 
   def ->[E <: DateElement[E]](element: E)(implicit op: DateOp[D, E]) {
-    list = RefDateHelper(op, element) :: list
+    elementList = RefDateHelper(op, element) :: elementList
   }
 
-  /*
   /**
    * creates the fromRef date
    * @return
@@ -97,7 +103,8 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[D, RefDate] {
       else
         step(false, r.millis.millis, iters, zeroDate)
     }
-  } */
-  def convert(a: D): RefDate = null
+  }
+
+  def convert(a: RefDate): D = null
 }
 
