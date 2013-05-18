@@ -1,7 +1,7 @@
 package de.sockenbaum.calendar.util
 
 import calendar.base._
-import calendar.core.{DateTransformer, DateOp, DateElement, Date}
+import calendar.core._
 
 /**
  * a test calendar that holds everything to the minute

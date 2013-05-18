@@ -23,6 +23,8 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
     def add(date: D) = op.add(date, element)
 
     def sub(date: D) = op.add(date, element.neg)
+
+    override def toString: String = element.toString
   }
 
   val zeroDate: D
@@ -36,7 +38,10 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
     this
   }
 
-  private def diff(a: D, b: D): BigInt = toRef.convert(a).millis - toRef.convert(b).millis
+  private def diff(a: D, b: D): BigInt = {
+    val d = toRef.convert(a).millis - toRef.convert(b).millis
+    if (d < 0) -d else d
+  }
 
   def convert(r: RefDate): D = {
     val seconds = r.millis
@@ -61,6 +66,7 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
                  accuSeconds: BigInt,
                  accuIterElements: List[RefDateHelper[_]],
                  accuDate: D): D = {
+    println("[" + incrementSeconds + ", " + accuSeconds + ", " + accuIterElements + ", " + accuDate + "]")
     if (accuSeconds == 0) accuDate
     else {
       var nextIncrementSeconds = incrementSeconds
