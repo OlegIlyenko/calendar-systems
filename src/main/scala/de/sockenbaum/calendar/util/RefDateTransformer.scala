@@ -45,7 +45,7 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
 
   def convert(r: RefDate): D = {
     val seconds = r.millis
-    println("start iteration")
+    //    println("start iteration")
     if (seconds == 0)
       zeroDate
     else if (seconds < 0)
@@ -67,7 +67,7 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
                  accuSeconds: BigInt,
                  accuIterElements: List[RefDateHelper[_]],
                  accuDate: D): D = {
-    println("[" + incrementSeconds + ", " + accuSeconds + ", " + accuIterElements + ", " + accuDate + "]")
+    //    println("[" + incrementSeconds + ", " + accuSeconds + ", " + accuIterElements + ", " + accuDate + "]")
     if (accuSeconds == 0) accuDate
     else {
       var nextIncrementSeconds = incrementSeconds
