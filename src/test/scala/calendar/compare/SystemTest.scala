@@ -17,14 +17,22 @@ import calendar.base.RefDate
  */
 class SystemTest extends FlatSpec {
 
-  "DateCompare" should "find correct Object" in {
+  "DateCompare" should "find definitions" in {
     assert(CoreDate(100) === CoreDate(100))
     assert(CoreDate(101) !== CoreDate(100))
     assert(CoreDate(100) === RefDate(100))
     assert(RefDate(100) === CoreDate(100))
+
+  }
+  it should "find backup definitions" in {
     assert(CoreDate(100) === ShiftTenDate(90))
     assert(ShiftTenDate(100) === CoreDate(110))
     assert(ShiftTenDate(90) === RefDate(100))
   }
-
+  it should "be found by all relations" in {
+    assert(CoreDate(30) <= ShiftTenDate(199))
+    assert(ShiftTenDate(100) >= CoreDate(30))
+    assert(CoreDate(30) < ShiftTenDate(199))
+    assert(ShiftTenDate(100) > CoreDate(30))
+  }
 }
