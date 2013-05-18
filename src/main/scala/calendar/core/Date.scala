@@ -31,7 +31,7 @@ trait Date[D <: Date[D]] {
 /**
  * standard implicit elements holder for standard behavior and fallback
  */
-object Date {
+object Date extends visibilityDate {
   /**
    * converter for identity (maybe not needed)
    */
@@ -79,6 +79,10 @@ object Date {
     def greaterEqual(a: A, b: B): Boolean = transformA.convert(a).millis >= transformB.convert(b).millis
   }
 
+
+}
+
+trait visibilityDate {
   /**
    * twists the definition of equality, so you don't have to implement both
    */
@@ -94,9 +98,5 @@ object Date {
 
     def greaterEqual(a: B, b: A): Boolean = twist.greaterEqual(b, a)
   }
-
-
 }
-
-
 
