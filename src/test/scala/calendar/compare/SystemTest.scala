@@ -34,4 +34,8 @@ class SystemTest extends FlatSpec {
     assert(CoreDate(30) < ShiftTenDate(199))
     assert(ShiftTenDate(100) > CoreDate(30))
   }
+  "DateOp" should "find definition" in {
+    assert(CoreDate(10) + One(1) === CoreDate(11))
+    assert(CoreDate(10) + Ten(1) === CoreDate(20))
+  }
 }
