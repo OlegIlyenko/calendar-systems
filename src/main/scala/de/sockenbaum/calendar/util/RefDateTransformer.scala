@@ -16,6 +16,7 @@ import calendar.core._
  * </p>
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  */
+// @todo : this must be optimized by step size analysis
 trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
 
   case class RefDateHelper[E <: DateElement[E]](op: DateOp[D, E], element: E) {
@@ -27,8 +28,7 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
   val zeroDate: D
   val toRef: DateTransformer[D, RefDate]
 
-  // @todo : this must be optimized by step size analysis
-  var elementList: List[RefDateHelper[_]] = Nil
+  private var elementList: List[RefDateHelper[_]] = Nil
 
   def ->[E <: DateElement[E]](element: E)(implicit op: DateOp[D, E]) {
     elementList = RefDateHelper(op, element) :: elementList
@@ -37,7 +37,7 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
   private def diff(a: D, b: D): BigInt = toRef.convert(a).millis - toRef.convert(b).millis
 
   /**
-   * subfunction for iteratiron
+   * sub function for iteration
    * @param incrementSeconds means decrement seconds
    * @param accuSeconds seconds accumulator
    * @param accuIterElements iterator accumulator
@@ -94,7 +94,6 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
       step(nextIncrementSeconds, nextAccuSeconds, nextAccuIterElements, nextAccuDate)
     }
   }
-
 
   def convert(r: RefDate): D = {
     val seconds = r.millis
