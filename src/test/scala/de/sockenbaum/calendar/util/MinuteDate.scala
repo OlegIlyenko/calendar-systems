@@ -1,7 +1,7 @@
 package de.sockenbaum.calendar.util
 
-import calendar.base.Millisecond
-import calendar.core.{DateOp, DateElement, Date}
+import calendar.base._
+import calendar.core.{DateTransformer, DateOp, DateElement, Date}
 
 /**
  * a test calendar that holds everything to the minute
@@ -39,4 +39,12 @@ object MinuteDate {
   implicit val addMinute = new DateOp[MinuteDate, Minute] {
     def add(a: MinuteDate, e: Minute): MinuteDate = MinuteDate(a.mili, a.sec, a.min + e.min)
   }
+
+  implicit val toRef = new DateTransformer[MinuteDate, RefDate] {
+    def convert(a: MinuteDate): RefDate = RefDate(a.min * 60000 + a.sec * 1000 + a.mili)
+  }
+  implicit val fromRef = new RefDateTransformer[MinuteDate] {
+    val zeroDate: MinuteDate = MinuteDate(0, 0, 0)
+    val toRef: DateTransformer[MinuteDate, RefDate] = MinuteDate.toRef
+  } -> Millisecond(1) -> Second(1) -> Minute(1)
 }

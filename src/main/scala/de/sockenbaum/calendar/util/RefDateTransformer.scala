@@ -31,8 +31,9 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
   private var elementList: List[RefDateHelper[_]] = Nil
 
   // @todo : add implicit not found error message
-  def put[E <: DateElement[E]](element: E)(implicit op: DateOp[D, E]) {
+  def ->[E <: DateElement[E]](element: E)(implicit op: DateOp[D, E]) = {
     elementList = RefDateHelper(op, element) :: elementList
+    this
   }
 
   private def diff(a: D, b: D): BigInt = toRef.convert(a).millis - toRef.convert(b).millis
