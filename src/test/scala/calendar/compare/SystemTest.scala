@@ -22,7 +22,7 @@ class SystemTest extends FlatSpec {
     assert(CoreDate(101) !== CoreDate(100))
     assert(CoreDate(100) === RefDate(100))
   }
-  it should "find backup definitions" in {
+  it should "find fallback definitions" in {
     assert(RefDate(100) === CoreDate(100))
     assert(CoreDate(100) === ShiftTenDate(90))
     assert(ShiftTenDate(100) === CoreDate(110))
@@ -34,8 +34,22 @@ class SystemTest extends FlatSpec {
     assert(CoreDate(30) < ShiftTenDate(199))
     assert(ShiftTenDate(100) > CoreDate(30))
   }
+  it should "also work" in {
+    assert(FuckUpDate(1) === CoreDate(1))
+    assert(FuckUpDate(1) === ShiftTenDate(1))
+    assert(ShiftTenDate(1) !== CoreDate(1))
+  }
+
   "DateOp" should "find definition" in {
     assert(CoreDate(10) + One(1) === CoreDate(11))
     assert(CoreDate(10) + Ten(1) === CoreDate(20))
+    assert(CoreDate(20) === CoreDate(10) + Ten(1))
+    assert(CoreDate(11) === CoreDate(10) + One(1))
   }
+  it should "find fallback definitions" in {
+    assert(ShiftTenDate(1) - Ten(1) === CoreDate(1))
+    assert(CoreDate(10) - Ten(1) < TwoDimensionDate(1, 1))
+  }
+
+
 }
