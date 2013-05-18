@@ -2,18 +2,16 @@ package de.sockenbaum.calendar.util
 
 import calendar.base._
 import annotation.tailrec
-import calendar.core.{DateOp, DateConnect, DateElement, Date}
+import calendar.core._
 
 /**
- * This is a util to make a Date in very short time.
+ * This is a util to create a calendar date to RefDate transformer in
+ * very short time.
  * You just have to define you Date format, the + and - function, and need a reference date
  *
- * <p>
- * the name is a bit misleading. The calendar is fast created, but is very slow in calculation
- * </p>
  * @author Ingolf Wagner <ingolf.wagner@zalando.de>
  */
-abstract class RefDateTransformer[D <: Date[D]] {
+trait RefDateTransformer[D <: Date[D]] extends DateTransformer[D, RefDate] {
 
   case class RefDateHelper[E <: DateElement[E]](op: DateOp[D, E], element: E)
 
@@ -100,5 +98,6 @@ abstract class RefDateTransformer[D <: Date[D]] {
         step(false, r.millis.millis, iters, zeroDate)
     }
   } */
+  def convert(a: D): RefDate = null
 }
 
