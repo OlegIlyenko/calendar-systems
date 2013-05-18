@@ -20,7 +20,11 @@ case class Minute(min: Int) extends DateElement[Minute] {
 }
 
 object MinuteDate {
+  // --- register date elements
+  implicit val registerMinute = new DateConnect[MinuteDate, Minute]
+  implicit val registerSecond = new DateConnect[MinuteDate, Second]
 
+  // --- operator definitions
   implicit val addMillisecond = new DateOp[MinuteDate, Millisecond] {
     def add(a: MinuteDate, e: Millisecond): MinuteDate = {
       val milli = e.millis % 1000
@@ -33,13 +37,14 @@ object MinuteDate {
     def add(a: MinuteDate, e: Second): MinuteDate = {
       val sec = e.sec % 60
       val min = e.sec / 60
-      MinuteDate(a.mili, a.sec + sec, a.min + min)
+      MinuteDate(a.min + min, a.sec + sec, a.mili)
     }
   }
   implicit val addMinute = new DateOp[MinuteDate, Minute] {
-    def add(a: MinuteDate, e: Minute): MinuteDate = MinuteDate(a.mili, a.sec, a.min + e.min)
+    def add(a: MinuteDate, e: Minute): MinuteDate = MinuteDate(a.min + e.min, a.sec, a.mili)
   }
 
+  // --- transformations
   implicit val toRef = new DateTransformer[MinuteDate, RefDate] {
     def convert(a: MinuteDate): RefDate = RefDate(a.min * 60000 + a.sec * 1000 + a.mili)
   }
