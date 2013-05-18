@@ -18,7 +18,11 @@ import calendar.core._
  */
 trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
 
-  case class RefDateHelper[E <: DateElement[E]](op: DateOp[D, E], element: E)
+  case class RefDateHelper[E <: DateElement[E]](op: DateOp[D, E], element: E) {
+    def add(date: D) = op.add(date, element)
+
+    def sub(date: D) = op.add(date, element.neg)
+  }
 
   val zeroDate: D
   val toRef: DateTransformer[D, RefDate]
@@ -41,15 +45,15 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
    * @return a date
    */
   @tailrec
-  def step(incrementSeconds: Boolean,
-           accuSeconds: BigInt,
-           accuIterElements: List[RefDateHelper[_]],
-           accuDate: D): D = {
+  final def step(incrementSeconds: Boolean,
+                 accuSeconds: BigInt,
+                 accuIterElements: List[RefDateHelper[_]],
+                 accuDate: D): D = {
     if (accuSeconds == 0) accuDate
     else {
       var nextIncrementSeconds = incrementSeconds
       var nextAccuSeconds = accuSeconds
-      var nextAccuIterDate = accuIterElements
+      var nextAccuIterElements = accuIterElements
       var nextAccuDate = accuDate
 
       if (accuSeconds > 0) {
@@ -57,38 +61,37 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
           // switch
           nextIncrementSeconds = false
           nextAccuSeconds = accuSeconds
-          nextAccuIterDate = accuIterElements.tail
+          nextAccuIterElements = accuIterElements.tail
           nextAccuDate = accuDate
         } else {
           // increment date
           // decrement seconds
           nextIncrementSeconds = false
-          nextAccuIterDate = accuIterElements
-          nextAccuDate = accuIterElements.head._1(accuDate)
+          nextAccuIterElements = accuIterElements
+          nextAccuDate = accuIterElements.head.add(accuDate)
           // seconds here are positive
           //nextAccuSeconds = accuSeconds - accuIterElements.head.toSecondsForAddition(accuDate)
-          nextAccuSeconds = accuSeconds - accuDate.diff(nextAccuDate)
+          nextAccuSeconds = accuSeconds - diff(accuDate, nextAccuDate)
         }
       } else {
         if (incrementSeconds) {
           // increment seconds
           // decrement date
           nextIncrementSeconds = true
-          nextAccuIterDate = accuIterElements
-          nextAccuDate = accuIterElements.head._2(accuDate)
+          nextAccuIterElements = accuIterElements
+          nextAccuDate = accuIterElements.head.sub(accuDate)
           // seconds here are negative
           //nextAccuSeconds = accuSeconds + accuIterElements.head.toSecondsForSubtraction(accuDate)
-          nextAccuSeconds = accuSeconds + accuDate.diff(nextAccuDate)
+          nextAccuSeconds = accuSeconds + diff(accuDate, nextAccuDate)
         } else {
+          // switch
           nextIncrementSeconds = true
           nextAccuSeconds = accuSeconds
-          nextAccuIterDate = accuIterElements.tail
+          nextAccuIterElements = accuIterElements.tail
           nextAccuDate = accuDate
         }
       }
-      // just for debugging
-      //println((nextAccuSeconds - accuSeconds) + " : " +  incrementSeconds + "," + accuSeconds + "," + accuIterElements + "," + accuDate)
-      step(nextIncrementSeconds, nextAccuSeconds, nextAccuIterDate, nextAccuDate)
+      step(nextIncrementSeconds, nextAccuSeconds, nextAccuIterElements, nextAccuDate)
     }
   }
 
@@ -98,9 +101,9 @@ trait RefDateTransformer[D <: Date[D]] extends DateTransformer[RefDate, D] {
     if (seconds == 0)
       zeroDate
     else if (seconds < 0)
-      step(true, r.millis, iters, zeroDate)
+      step(true, seconds, elementList, zeroDate)
     else
-      step(false, r.millis, iters, zeroDate)
+      step(false, seconds, elementList, zeroDate)
   }
 }
 
