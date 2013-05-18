@@ -7,7 +7,7 @@ import calendar.core._
  * a test calendar that holds everything to the minute
  * @author Ingolf Wagner <palipalo9@googlemail.com>
  */
-case class MinuteDate(mili: Int, sec: Int, min: Int) extends Date[MinuteDate] {
+case class MinuteDate(min: Int, sec: Int, mili: Int) extends Date[MinuteDate] {
 
 }
 

@@ -13,6 +13,7 @@ class RefDateTransformTest extends FlatSpec {
 
   "Transformation" should "work" in {
     assert(MinuteDate(0, 0, 0) + One(1) === CoreDate(1))
+    assert(MinuteDate(1, 0, 0) + One(1) === MinuteDate(1, 0, 1))
   }
 
 }
