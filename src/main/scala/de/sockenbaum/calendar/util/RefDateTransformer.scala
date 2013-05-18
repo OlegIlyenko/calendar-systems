@@ -21,6 +21,10 @@ abstract class RefDateTransformer[D <: Date[D]] {
 
   var list: List[RefDateHelper[_]] = Nil
 
+  def ->[E <: DateElement[E]](element: E)(implicit op: DateOp[D, E]) {
+    list = RefDateHelper(op, element) :: list
+  }
+
   /*
   /**
    * creates the fromRef date
