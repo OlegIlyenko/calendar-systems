@@ -20,6 +20,7 @@ case class Minute(min: Int) extends DateElement[Minute] {
 }
 
 object MinuteDate {
+
   // --- register date elements
   implicit val registerMinute = new DateConnect[MinuteDate, Minute]
   implicit val registerSecond = new DateConnect[MinuteDate, Second]
