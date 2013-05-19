@@ -56,7 +56,9 @@ object Date extends visibilityDate {
    * @todo : move me to calendar.base package (to make it more modular)
    */
   implicit def standardConverter[A <: Date[A], B <: Date[B]]
-  (implicit ev1: DateTransformer[A, RefDate], ev2: DateTransformer[RefDate, B]) = new DateTransformer[A, B] {
+  (implicit
+   ev1: DateTransformer[A, RefDate],
+   ev2: DateTransformer[RefDate, B]) = new DateTransformer[A, B] {
     def convert(a: A) = ev2.convert(ev1.convert(a))
   }
 

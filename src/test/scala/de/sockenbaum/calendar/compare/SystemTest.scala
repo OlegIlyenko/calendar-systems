@@ -6,7 +6,6 @@ import CoreDate._
 import FuckUpDate._
 import ShiftTenDate._
 import TwoDimensionDate._
-import calendar.base.RefDate._
 import calendar.base.RefDate
 
 
@@ -45,6 +44,7 @@ class SystemTest extends FlatSpec {
     assert(CoreDate(11) === CoreDate(10) + One(1))
   }
   it should "find fallback definitions" in {
+    assert(ShiftTenDate(1) + Ten(1) === CoreDate(21))
     assert(ShiftTenDate(1) - Ten(1) === CoreDate(1))
     assert(CoreDate(10) - Ten(1) < TwoDimensionDate(1, 1))
   }
