@@ -9,3 +9,5 @@ package calendar.core
 trait DateOp[D <: Date[D], E <: DateElement[E]] {
   def add(a: D, e: E): D
 }
+
+trait PreferredOperator[D <: Date[D], E <: DateElement[E]]

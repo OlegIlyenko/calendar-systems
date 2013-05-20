@@ -27,7 +27,10 @@ object TwoDimensionDate {
     def add(a: TwoDimensionDate, e: One): TwoDimensionDate = TwoDimensionDate(a.ten + ((a.rest + e.i) / 10), (a.rest + e.i) % 10)
   }
   implicit val opTen = new DateOp[TwoDimensionDate, Ten] {
-    def add(a: TwoDimensionDate, e: Ten): TwoDimensionDate = TwoDimensionDate(a.ten + e.i, a.rest)
+    def add(a: TwoDimensionDate, e: Ten): TwoDimensionDate = {
+      println("-------------------> fast")
+      TwoDimensionDate(a.ten + e.i, a.rest)
+    }
   }
 
   // --- transformation
@@ -38,7 +41,9 @@ object TwoDimensionDate {
   implicit val fromRef = new DateTransformer[RefDate, TwoDimensionDate] {
     def convert(a: RefDate): TwoDimensionDate = TwoDimensionDate(a.millis.intValue() / 10, a.millis.intValue() % 10)
   }
-
-
 }
 
+object FastButImpreciseOneAndTenOperations {
+  implicit object PreferredOperatorForOne extends PreferredOperator[TwoDimensionDate, One]
+  implicit object PreferredOperatorForTen extends PreferredOperator[TwoDimensionDate, Ten]
+}

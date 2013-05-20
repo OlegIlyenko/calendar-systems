@@ -43,12 +43,23 @@ object Date extends visibilityDate {
    * creates operators if no fitting Operator is found.
    * we implicitly transform the date object to a fitting target date.
    */
-  implicit def transformOp[A <: Date[A], E <: DateElement[E], B <: Date[B], C <: DateConnect[B, E]]
+  implicit def transformOp[A <: Date[A], E <: DateElement[E], B <: Date[B]]
   (implicit
-   transformerA: DateTransformer[A, B],
-   transformerB: DateTransformer[B, A],
+   aToRef: DateTransformer[A, RefDate],
+   pref: PreferredOperator[B, E],
+   refToB: DateTransformer[RefDate, B],
+   bToRef: DateTransformer[B, RefDate],
+   refToA: DateTransformer[RefDate, A],
    op: DateOp[B, E]) = new DateOp[A, E] {
-    def add(a: A, e: E) = transformerB.convert(op.add(transformerA.convert(a), e))
+    def add(a: A, e: E) = {
+      val ref = aToRef convert a
+      val b = refToB convert ref
+      val addedB = op add (b, e)
+      val addedRef = bToRef convert addedB
+      val addedA = refToA convert addedRef
+
+      addedA
+    }
   }
 
   /**

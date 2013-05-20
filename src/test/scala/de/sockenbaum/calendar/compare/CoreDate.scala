@@ -14,8 +14,16 @@ case class One(i: Int) extends DateElement[One] {
   def neg: One = One(-i)
 }
 
+object One {
+  implicit object PreferredOperatorForOne extends PreferredOperator[CoreDate, One]
+}
+
 case class Ten(i: Int) extends DateElement[Ten] {
   def neg: Ten = Ten(-i)
+}
+
+object Ten {
+  implicit object PreferredOperatorForTen extends PreferredOperator[CoreDate, Ten]
 }
 
 object CoreDate {

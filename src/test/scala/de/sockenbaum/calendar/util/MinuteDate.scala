@@ -15,8 +15,16 @@ case class Second(sec: Int) extends DateElement[Second] {
   def neg: Second = Second(-sec)
 }
 
+object Second {
+  implicit object PreferredOperatorForSecond extends PreferredOperator[MinuteDate, Second]
+}
+
 case class Minute(min: Int) extends DateElement[Minute] {
   def neg: Minute = Minute(-min)
+}
+
+object Minute {
+  implicit object PreferredOperatorForMinute extends PreferredOperator[MinuteDate, Minute]
 }
 
 object MinuteDate {
